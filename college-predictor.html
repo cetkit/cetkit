@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>College Predictor · CETkit</title>
+<style>
+  :root{
+    --navy:#0d1526;
+    --navy-2:#f4f6fb;
+    --navy-soft:#16213c;
+    --panel:#ffffff;
+    --panel-border:#e0e4ee;
+    --yellow:#f5c518;
+    --yellow-dim:#e0b010;
+    --green:#1f9d55;
+    --green-bg:#e5f6ec;
+    --text:#0d1526;
+    --text-dim:#5b6478;
+    --text-faint:#8b93a7;
+    --text-on-navy:#c6cde3;
+    --blue-chip:#2851c9;
+    --blue-chip-bg:#e7edfc;
+    --pink:#d94f3d;
+    --pink-bg:#fbe9e6;
+    --input-bg:#f7f8fc;
+    --row-bg:#f7f8fc;
+    --row-border:#e6e9f2;
+    --mono: 'JetBrains Mono','Courier New',monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--navy-2);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    min-height:100vh;
+  }
+
+  /* ---------- Top bar ---------- */
+  header.topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 28px;
+    background:#ffffff;
+    color:#0d1526;
+    border-bottom:1px solid var(--panel-border);
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:-0.5px;}
+  .brand .logo{
+    width:34px;height:34px;border-radius:9px;background:var(--navy);
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+  }
+  .brand .logo::before{
+    content:"";
+    width:12px;height:12px;border-radius:50%;
+    background:var(--yellow);
+    box-shadow: 9px 0 0 var(--pink);
+  }
+  .brand .kit{color:var(--yellow-dim);background:var(--navy);padding:1px 6px;border-radius:5px;font-size:19px;}
+  .topbar-right{display:flex;align-items:center;gap:22px;}
+  .topnav a{color:#0d1526;text-decoration:none;font-size:14px;font-weight:600;opacity:.75;}
+  .back-home{
+    display:flex;align-items:center;gap:7px;
+    background:var(--navy);color:var(--yellow);
+    border:none;padding:9px 16px;border-radius:9px;
+    font-weight:700;font-size:14px;cursor:pointer;
+    text-decoration:none;
+  }
+  .back-home:hover{background:#1c2946;}
+  .back-home svg{width:15px;height:15px;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    max-width:1180px;margin:0 auto;padding:36px 24px 0;
+  }
+  .hero-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--yellow);color:#241d02;
+    font-size:11px;font-weight:800;letter-spacing:1.5px;
+    padding:5px 12px;border-radius:20px;text-transform:uppercase;
+  }
+  .hero-badge::before{content:"";width:7px;height:7px;border-radius:50%;background:#241d02;}
+  .hero h1{font-size:38px;margin:16px 0 8px;letter-spacing:-1px;font-weight:800;}
+  .hero p.sub{color:var(--text-dim);font-size:15.5px;max-width:640px;line-height:1.5;margin:0 0 22px;}
+
+  /* ---------- Merit meter (signature panel) ---------- */
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px 80px;}
+
+  .meter-panel{
+    background:linear-gradient(165deg,var(--navy) 0%,var(--navy-soft) 100%);
+    border-radius:20px;
+    padding:28px 30px 24px;
+    margin-bottom:26px;
+    box-shadow:0 10px 30px rgba(13,21,38,0.25);
+  }
+  .meter-top{
+    display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:18px;
+  }
+  .mode-toggle{
+    display:inline-flex;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);
+    border-radius:30px;padding:4px;position:relative;
+  }
+  .mode-toggle .mt-highlight{
+    position:absolute;top:4px;left:4px;bottom:4px;width:calc(50% - 4px);
+    background:var(--yellow);border-radius:26px;
+    transition:transform .22s cubic-bezier(.4,0,.2,1);
+    z-index:0;
+  }
+  .mode-toggle.rank-active .mt-highlight{ transform:translateX(100%); }
+  .mode-toggle button{
+    position:relative;z-index:1;
+    background:transparent;border:none;cursor:pointer;
+    padding:9px 22px;font-size:13.5px;font-weight:800;letter-spacing:.3px;
+    color:var(--text-on-navy);transition:color .18s;
+  }
+  .mode-toggle.percentile-active button.mt-pct{color:#241d02;}
+  .mode-toggle.rank-active button.mt-rank{color:#241d02;}
+
+  .merit-input-row{
+    display:flex;align-items:baseline;gap:12px;margin-top:22px;flex-wrap:wrap;
+  }
+  .merit-input-row label{
+    font-size:11.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-on-navy);
+    font-weight:700;
+  }
+  #meritInput{
+    background:transparent;border:none;border-bottom:3px solid rgba(255,255,255,0.18);
+    color:var(--yellow);font-family:var(--mono);font-weight:800;
+    font-size:44px;letter-spacing:-1px;width:100%;max-width:420px;
+    padding:4px 2px 8px;outline:none;
+  }
+  #meritInput:focus{border-bottom-color:var(--yellow);}
+  #meritInput::placeholder{color:rgba(255,255,255,0.25);}
+  .merit-suffix{font-family:var(--mono);font-size:22px;color:var(--text-on-navy);font-weight:700;}
+
+  .merit-hint{font-size:12px;color:var(--text-on-navy);opacity:.75;margin-top:8px;line-height:1.5;max-width:520px;}
+
+  .meter-bar-wrap{margin-top:20px;}
+  .meter-bar{
+    position:relative;height:10px;border-radius:6px;
+    background:linear-gradient(90deg,#2c3652 0%, #2c3652 100%);
+    overflow:visible;
+  }
+  .meter-bar .zone{position:absolute;top:0;bottom:0;border-radius:6px;opacity:.55;}
+  .meter-marker{
+    position:absolute;top:-6px;width:3px;height:22px;border-radius:3px;
+    background:var(--yellow);box-shadow:0 0 0 4px rgba(245,197,24,0.18);
+    transition:left .25s ease;
+  }
+  .meter-scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--text-on-navy);opacity:.6;margin-top:6px;}
+
+  /* filter strip inside meter panel */
+  .filter-strip{
+    display:flex;flex-wrap:wrap;gap:14px;margin-top:24px;padding-top:22px;
+    border-top:1px solid rgba(255,255,255,0.1);
+  }
+  .fs-field{display:flex;flex-direction:column;gap:6px;min-width:150px;}
+  .fs-field label{font-size:10.5px;text-transform:uppercase;letter-spacing:1px;color:var(--text-on-navy);font-weight:700;}
+  .fs-field select{
+    background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.16);
+    color:#fff;padding:9px 11px;border-radius:8px;font-size:13px;font-family:inherit;outline:none;
+  }
+  .fs-field select:focus{border-color:var(--yellow-dim);}
+  .fs-field select option{color:#0d1526;}
+
+  .gender-pills{display:flex;gap:8px;}
+  .gender-pills .pill{
+    padding:8px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.16);
+    background:rgba(255,255,255,0.06);color:var(--text-on-navy);
+    font-size:12.5px;font-weight:700;cursor:pointer;user-select:none;
+  }
+  .gender-pills .pill.active{background:var(--yellow);color:#241d02;border-color:var(--yellow);}
+
+  .quota-toggle-link{
+    align-self:flex-end;
+    font-size:12px;font-weight:700;color:var(--yellow-dim);cursor:pointer;
+    display:flex;align-items:center;gap:5px;user-select:none;
+  }
+  .quota-toggle-link svg{width:12px;height:12px;transition:transform .15s;}
+  .quota-toggle-link.open svg{transform:rotate(180deg);}
+
+  .quota-panel{
+    display:none;flex-wrap:wrap;gap:10px;margin-top:14px;
+  }
+  .quota-panel.show{display:flex;}
+  .quota-chip{
+    display:flex;align-items:center;gap:8px;
+    background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.16);
+    padding:8px 12px;border-radius:20px;cursor:pointer;user-select:none;
+  }
+  .quota-chip span{font-size:12px;font-weight:700;color:var(--text-on-navy);}
+  .quota-chip .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.25);flex-shrink:0;}
+  .quota-chip.on{background:rgba(245,197,24,0.14);border-color:var(--yellow-dim);}
+  .quota-chip.on .dot{background:var(--yellow);}
+  .quota-chip.on span{color:#fff;}
+
+  .predict-btn{
+    margin-top:22px;
+    background:var(--yellow);color:#241d02;border:none;
+    padding:13px 26px;border-radius:10px;
+    font-size:14.5px;font-weight:800;letter-spacing:.2px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:8px;
+    transition:.12s;
+  }
+  .predict-btn:hover{background:#ffd23f;}
+  .predict-btn svg{width:16px;height:16px;}
+
+  .merit-error{color:#ff9d8f;font-size:12px;font-weight:700;margin-top:10px;display:none;}
+  .merit-error.show{display:block;}
+
+  /* ---------- Results side ---------- */
+  .search-row{display:flex;gap:10px;margin-bottom:14px;}
+  .search-box{flex:1;position:relative;}
+  .search-box svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--text-dim);}
+  .search-box input{
+    width:100%;padding:14px 14px 14px 44px;font-size:15px;font-weight:500;
+    background:#ffffff;border:2px solid var(--navy);border-radius:12px;
+    box-shadow:0 2px 8px rgba(13,21,38,0.06);outline:none;font-family:inherit;
+  }
+  .search-box input:focus{border-color:var(--yellow-dim);box-shadow:0 2px 10px rgba(245,197,24,0.25);}
+  .search-box input::placeholder{color:var(--text-faint);}
+
+  .status-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+  .result-count{font-size:13px;color:var(--text-dim);}
+  .result-count b{color:var(--text);}
+  .sort-select{
+    background:var(--input-bg);border:1px solid var(--panel-border);color:var(--text);
+    padding:8px 12px;border-radius:9px;font-size:12.5px;font-family:inherit;outline:none;
+  }
+
+  .state-msg{text-align:center;padding:60px 20px;color:var(--text-faint);}
+  .state-msg .spin{
+    width:26px;height:26px;border-radius:50%;
+    border:3px solid var(--panel-border);border-top-color:var(--yellow-dim);
+    margin:0 auto 14px;animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .prompt-state{text-align:center;padding:70px 20px;}
+  .prompt-state .pi{
+    width:52px;height:52px;border-radius:50%;background:var(--blue-chip-bg);color:var(--blue-chip);
+    display:flex;align-items:center;justify-content:center;margin:0 auto 16px;
+  }
+  .prompt-state .pi svg{width:24px;height:24px;}
+  .prompt-state h4{font-size:17px;margin-bottom:8px;}
+  .prompt-state p{color:var(--text-faint);font-size:13.5px;max-width:380px;margin:0 auto;line-height:1.5;}
+
+  /* ---------- Fallback banner (reused pattern) ---------- */
+  .fallback-banner{
+    position:relative;
+    background:#fff4e0;border:1px solid #f0d090;color:#7a5300;
+    border-radius:10px;padding:9px 12px 9px 14px;margin-bottom:14px;
+    font-size:12.5px;font-weight:600;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+  }
+  .fallback-banner.is-override{background:var(--blue-chip-bg);border-color:#b9c9f2;color:var(--blue-chip);}
+  .fallback-text{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+  .fallback-text .warn-dot{width:6px;height:6px;border-radius:50%;background:#c98a00;flex-shrink:0;}
+  .fallback-banner.is-override .warn-dot{background:var(--blue-chip);}
+  .fallback-arrow-btn{
+    background:transparent;border:none;cursor:pointer;font-size:14px;color:inherit;font-weight:800;
+    padding:2px 7px;border-radius:6px;line-height:1;flex-shrink:0;
+  }
+  .fallback-arrow-btn:hover{background:rgba(0,0,0,0.07);}
+  .fallback-arrow-btn.open{transform:rotate(180deg);}
+  .fallback-menu{
+    position:absolute;top:calc(100% + 6px);right:0;z-index:20;
+    background:#ffffff;border:1px solid var(--panel-border);border-radius:12px;
+    box-shadow:0 8px 24px rgba(13,21,38,0.14);width:280px;max-height:320px;overflow-y:auto;padding:8px;
+  }
+  .fallback-menu-title{font-size:11.5px;font-weight:800;color:var(--pink);padding:6px 8px 10px;border-bottom:1px solid var(--row-border);margin-bottom:6px;line-height:1.4;}
+  .fallback-menu-item{padding:8px 9px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--text);cursor:pointer;font-family:var(--mono);}
+  .fallback-menu-item:hover{background:var(--input-bg);}
+  .fallback-menu-item.reset{color:var(--yellow-dim);border-top:1px solid var(--row-border);margin-top:4px;padding-top:9px;font-family:inherit;}
+  .fallback-menu-empty{padding:8px 9px;font-size:12px;color:var(--text-faint);font-style:italic;}
+
+  /* ---------- College cards ---------- */
+  .college-card{
+    background:var(--panel);border:1px solid var(--panel-border);border-radius:14px;
+    padding:18px 20px;margin-bottom:12px;box-shadow:0 1px 3px rgba(13,21,38,0.04);
+  }
+  .college-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;}
+  .college-name{font-size:16.5px;font-weight:800;letter-spacing:-.2px;line-height:1.3;}
+  .college-meta{font-size:12px;color:var(--text-faint);margin-top:4px;font-family:var(--mono);}
+  .code-chip{
+    background:var(--blue-chip-bg);color:var(--blue-chip);font-family:var(--mono);font-size:11px;
+    font-weight:700;padding:3px 9px;border-radius:6px;white-space:nowrap;
+  }
+  .home-badge{
+    display:inline-block;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+    background:#fbe8a8;color:#8a6600;padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:middle;
+  }
+  .branch-list{margin-top:14px;display:flex;flex-direction:column;gap:8px;}
+  .branch-row{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--row-bg);border:1px solid var(--row-border);border-left:4px solid var(--row-border);
+    border-radius:10px;padding:10px 14px;flex-wrap:wrap;gap:8px;
+  }
+  .branch-row.fit-reach{border-left-color:var(--pink);}
+  .branch-row.fit-match{border-left-color:var(--yellow-dim);}
+  .branch-row.fit-safe{border-left-color:var(--green);}
+
+  .branch-row .bname{font-size:13.5px;font-weight:600;}
+  .branch-row .bcode{font-family:var(--mono);font-size:10.5px;color:var(--text-faint);margin-top:2px;}
+  .fit-badge{
+    display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+    padding:2px 8px;border-radius:10px;margin-top:4px;
+  }
+  .fit-badge.fit-reach{background:var(--pink-bg);color:var(--pink);}
+  .fit-badge.fit-match{background:#fdf1c7;color:#8a6600;}
+  .fit-badge.fit-safe{background:var(--green-bg);color:var(--green);}
+
+  .cutoff-stack{display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
+  .cutoff-result{display:flex;align-items:baseline;gap:9px;}
+  .cutoff-result.home-result .pct{color:var(--yellow-dim);}
+  .cutoff-result .pct{font-family:var(--mono);font-size:18px;font-weight:800;color:var(--green);letter-spacing:-.2px;}
+  .cutoff-result .pct .pctsign{font-size:12px;font-weight:700;margin-left:1px;opacity:.85;}
+  .cutoff-result .rank{font-family:var(--mono);font-size:11.5px;color:var(--text-faint);font-weight:600;}
+  .poollabel{font-size:8.5px;font-weight:800;letter-spacing:.5px;background:#e9ecf5;color:var(--text-faint);padding:2px 5px;border-radius:4px;margin-left:6px;}
+  .poollabel.home{background:#fbe8a8;color:#8a6600;}
+  .cutoff-result .catlabel{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-faint);font-family:var(--mono);}
+
+  .empty-state{text-align:center;padding:70px 20px;}
+  .empty-state h4{font-size:18px;margin-bottom:8px;}
+  .empty-state p{color:var(--text-faint);font-size:13.5px;}
+
+  /* ---------- Disclaimer ---------- */
+  .disclaimer{
+    display:flex;gap:12px;align-items:flex-start;
+    background:#fff8e6;border:1px solid #f0dfa0;border-radius:12px;
+    padding:16px 18px;margin-top:24px;
+  }
+  .disclaimer .di{
+    width:30px;height:30px;border-radius:50%;background:var(--yellow);color:#241d02;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:800;font-size:14px;
+  }
+  .disclaimer p{margin:0;font-size:12.5px;color:#6b5000;line-height:1.55;}
+  .disclaimer p b{color:#4a3700;}
+
+  footer.foot{text-align:center;padding:30px 0 50px;color:var(--text-faint);font-size:12px;}
+
+  ::-webkit-scrollbar{width:9px;height:9px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:#d2d7e5;border-radius:10px;}
+
+  @media (max-width:640px){
+    #meritInput{font-size:32px;}
+    .hero h1{font-size:30px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo"></div>
+    CET<span class="kit">kit</span>
+  </div>
+  <div class="topbar-right">
+    <nav class="topnav">
+      <a href="cutoff-explorer.html">Cutoff Explorer</a>
+    </nav>
+    <a class="back-home" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to Home
+    </a>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-badge">2026 · CAP Round I</div>
+  <h1>College Predictor</h1>
+  <p class="sub">Enter your percentile or rank and we'll surface the colleges &amp; branches within your reach — ranked from the toughest match down to the safest picks.</p>
+</div>
+
+<div class="wrap">
+
+  <!-- MERIT METER -->
+  <div class="meter-panel">
+    <div class="meter-top">
+      <div class="mode-toggle percentile-active" id="modeToggle">
+        <div class="mt-highlight"></div>
+        <button type="button" class="mt-pct" data-mode="percentile">Percentile</button>
+        <button type="button" class="mt-rank" data-mode="rank">Rank</button>
+      </div>
+    </div>
+
+    <div class="merit-input-row">
+      <label id="meritLabel">Your percentile</label>
+    </div>
+    <input type="text" inputmode="decimal" id="meritInput" placeholder="e.g. 97.4428934" autocomplete="off">
+    <div class="merit-hint" id="meritHint">
+      Round numbers get a wider safety margin. Enter your exact percentile (as many decimals as you have) for a tighter, more accurate match.
+    </div>
+    <div class="merit-error" id="meritError">Enter a valid percentile between 0 and 100.</div>
+
+    <div class="meter-bar-wrap" id="meterBarWrap">
+      <div class="meter-bar" id="meterBar">
+        <div class="meter-marker" id="meterMarker" style="left:0%;"></div>
+      </div>
+      <div class="meter-scale"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+    </div>
+
+    <div class="filter-strip">
+      <div class="fs-field">
+        <label>Category</label>
+        <select id="fCategory">
+          <option value="OPEN">Open</option>
+          <option value="SC">SC</option>
+          <option value="ST">ST</option>
+          <option value="VJ">VJ (NT-A)</option>
+          <option value="NT1">NT1 (NT-B)</option>
+          <option value="NT2">NT2 (NT-C)</option>
+          <option value="NT3">NT3 (NT-D)</option>
+          <option value="OBC">OBC</option>
+          <option value="SEBC">SEBC</option>
+        </select>
+      </div>
+      <div class="fs-field">
+        <label>Gender</label>
+        <div class="gender-pills" id="fGender">
+          <div class="pill active" data-val="G">All / Male</div>
+          <div class="pill" data-val="L">Female</div>
+        </div>
+      </div>
+      <div class="fs-field" style="flex:1;min-width:200px;">
+        <label>Your 12th (HSC) district</label>
+        <select id="fDistrict">
+          <option value="">Select your district…</option>
+        </select>
+      </div>
+      <div class="quota-toggle-link" id="quotaToggleLink">
+        Special quotas
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+
+    <div class="quota-panel" id="quotaPanel">
+      <div class="quota-chip" data-flag="DEF"><span class="dot"></span><span>Defence (DEF)</span></div>
+      <div class="quota-chip" data-flag="PWD"><span class="dot"></span><span>PWD</span></div>
+      <div class="quota-chip" data-flag="EWS"><span class="dot"></span><span>EWS</span></div>
+      <div class="quota-chip" data-flag="TFWS"><span class="dot"></span><span>TFWS</span></div>
+      <div class="quota-chip" data-flag="ORPHAN"><span class="dot"></span><span>Orphan</span></div>
+    </div>
+
+    <button class="predict-btn" id="predictBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      Find my colleges
+    </button>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="search-row">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input type="text" id="collegeSearch" placeholder="Search college name, code, or branch…">
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="result-count" id="resultCount">Loading…</div>
+    <select class="sort-select" id="sortBy">
+      <option value="best">Sort: Closest to your merit first</option>
+      <option value="name">Sort: College name (A–Z)</option>
+      <option value="safest">Sort: Safest options first</option>
+    </select>
+  </div>
+
+  <div class="fallback-banner" id="fallbackBanner" style="display:none;">
+    <div class="fallback-text" id="fallbackText"><span class="warn-dot"></span></div>
+    <button class="fallback-arrow-btn" id="fallbackArrowBtn" type="button" aria-label="Show other options">▾</button>
+    <div class="fallback-menu" id="fallbackMenu" style="display:none;">
+      <div class="fallback-menu-title" id="fallbackMenuTitle"></div>
+      <div id="fallbackMenuList"></div>
+      <div class="fallback-menu-item reset" id="fallbackResetItem">↺ Reset to automatic fallback</div>
+    </div>
+  </div>
+
+  <div id="results">
+    <div class="state-msg" id="loadingMsg"><div class="spin"></div>Fetching live cutoff data…</div>
+  </div>
+
+  <div class="disclaimer">
+    <div class="di">!</div>
+    <p><b>This is a prediction, not a guarantee.</b> It's based on 2026 CAP Round I cutoff data and is meant to give you realistic, ballpark options near your merit — actual cutoffs can shift in later rounds and in future years. Always cross-check with the official CAP brochure and cutoff list before making a decision.</p>
+  </div>
+
+  <footer class="foot">CETkit · College Predictor — built on CAP Round I, 2026 cutoff data. For reference only.</footer>
+</div>
+
+<script>
+/* =========================================================
+   SUPABASE CONFIG
+   ========================================================= */
+const SUPABASE_URL = "https://ckwpllmgvopiucsqqmkn.supabase.co";
+const SUPABASE_KEY = "sb_publishable_K9ggT2F_WHwSBgIj4mHFBg_afApiIJF";
+const TABLE = "2026cutoffs";
+
+/* =========================================================
+   DISTRICT -> HOME UNIVERSITY MAP
+   ========================================================= */
+const DISTRICT_TO_UNIVERSITY = {
+  "Mumbai City": "Mumbai University",
+  "Mumbai Suburban": "Mumbai University",
+  "Thane": "Mumbai University",
+  "Raigad": "Mumbai University",
+  "Ratnagiri": "Mumbai University",
+  "Sindhudurg": "Mumbai University",
+  "Palghar": "Mumbai University",
+
+  "Pune": "Savitribai Phule Pune University",
+  "Ahmednagar": "Savitribai Phule Pune University",
+  "Nashik": "Savitribai Phule Pune University",
+
+  "Kolhapur": "Shivaji University",
+  "Sangli": "Shivaji University",
+  "Satara": "Shivaji University",
+
+  "Solapur": "Punyashlok Ahilyadevi Holkar Solapur University",
+
+  "Dhule": "Kavayitri Bahinabai Chaudhari North Maharashtra University, Jalgaon",
+  "Jalgaon": "Kavayitri Bahinabai Chaudhari North Maharashtra University, Jalgaon",
+  "Nandurbar": "Kavayitri Bahinabai Chaudhari North Maharashtra University, Jalgaon",
+
+  "Aurangabad (Chhatrapati Sambhajinagar)": "Dr. Babasaheb Ambedkar Marathwada University",
+  "Beed": "Dr. Babasaheb Ambedkar Marathwada University",
+  "Jalna": "Dr. Babasaheb Ambedkar Marathwada University",
+  "Osmanabad (Dharashiv)": "Dr. Babasaheb Ambedkar Marathwada University",
+
+  "Hingoli": "Swami Ramanand Teerth Marathwada University, Nanded",
+  "Latur": "Swami Ramanand Teerth Marathwada University, Nanded",
+  "Nanded": "Swami Ramanand Teerth Marathwada University, Nanded",
+  "Parbhani": "Swami Ramanand Teerth Marathwada University, Nanded",
+
+  "Akola": "Sant Gadge Baba Amravati University",
+  "Amravati": "Sant Gadge Baba Amravati University",
+  "Buldhana": "Sant Gadge Baba Amravati University",
+  "Washim": "Sant Gadge Baba Amravati University",
+  "Yavatmal": "Sant Gadge Baba Amravati University",
+
+  "Bhandara": "Rashtrasant Tukadoji Maharaj Nagpur University",
+  "Gondia": "Rashtrasant Tukadoji Maharaj Nagpur University",
+  "Nagpur": "Rashtrasant Tukadoji Maharaj Nagpur University",
+  "Wardha": "Rashtrasant Tukadoji Maharaj Nagpur University",
+
+  "Chandrapur": "Gondwana University",
+  "Gadchiroli": "Gondwana University"
+};
+
+/* =========================================================
+   STATE
+   ========================================================= */
+let allRows = [];
+let columnMap = {};
+let colKeys = [];
+let nameCol, codeCol, statusCol, branchCodeCol, branchNameCol;
+
+const state = {
+  mode: "percentile",         // "percentile" | "rank"
+  percentileStr: "",
+  rankStr: "",
+  category: "OPEN",
+  gender: "G",
+  district: "",
+  flags: { DEF:false, PWD:false, EWS:false, TFWS:false, ORPHAN:false },
+  search: "",
+  sort: "best",
+  override: null,             // manual column choice from the fallback menu
+  hasSearched: false
+};
+
+/* =========================================================
+   HELPERS: column detection (same approach as Cutoff Explorer)
+   ========================================================= */
+function norm(s){ return String(s).toLowerCase().replace(/[^a-z0-9]/g,""); }
+
+function detectColumns(sampleRow){
+  const keys = Object.keys(sampleRow);
+  keys.forEach(k=>{ columnMap[norm(k)] = k; });
+
+  nameCol      = columnMap[norm("College Name")] || columnMap["collegename"] || keys.find(k=>norm(k).includes("collegename"));
+  codeCol      = columnMap[norm("College Code")] || columnMap["collegecode"] || keys.find(k=>norm(k).includes("collegecode"));
+  statusCol    = columnMap[norm("Status")] || columnMap["status"] || keys.find(k=>norm(k).includes("status"));
+  branchCodeCol= columnMap[norm("Branch Code")] || columnMap["branchcode"] || keys.find(k=>norm(k).includes("branchcode"));
+  branchNameCol= columnMap[norm("Branch Name")] || columnMap["branchname"] || keys.find(k=>norm(k).includes("branchname"));
+
+  const metaNorm = new Set([norm("Sr No"), norm(nameCol||""), norm(codeCol||""), norm(statusCol||""), norm(branchCodeCol||""), norm(branchNameCol||""), "srno","id"]);
+  colKeys = keys.filter(k=>!metaNorm.has(norm(k)));
+}
+
+function resolveColumnCodes(){
+  if (state.override){
+    return { state: state.override, home: null, fallback: null };
+  }
+
+  const f = state.flags;
+  const cat = state.category;
+  const gender = state.gender;
+  let candidates, home = null;
+
+  if (f.EWS){ candidates = ["EWS"]; }
+  else if (f.TFWS){ candidates = ["TFWS"]; }
+  else if (f.ORPHAN){ candidates = ["ORPHAN"]; }
+  else if (f.DEF && f.PWD){ candidates = [`PWDR${cat}S`, `DEFR${cat}S`, `DEF${cat}S`]; }
+  else if (f.DEF){ candidates = [`DEF${cat}S`, `DEFR${cat}S`, `DEF${cat}`, `DEFR${cat}`]; }
+  else if (f.PWD){ candidates = [`PWD${cat}S`, `PWDR${cat}S`, `PWD${cat}`]; home = findCol([`PWD${cat}H`]); }
+  else { candidates = [`${gender}${cat}S`]; home = findCol([`${gender}${cat}H`]); }
+
+  const requestedLabel = candidates[0];
+  let col = findCol(candidates);
+  let fallback = null;
+
+  if (!col){
+    const fb = findCol([`${gender}OPENS`, "GOPENS"]);
+    if (fb){
+      col = fb;
+      fallback = { requested: requestedLabel, used: fb };
+    }
+  }
+
+  return { state: col, home, fallback };
+}
+
+function findCol(candidates){
+  for (const c of candidates){
+    const hit = columnMap[norm(c)];
+    if (hit) return hit;
+  }
+  return null;
+}
+
+function labelForColumn(colName){
+  if (!colName) return "";
+  return colName.toUpperCase();
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+}
+
+/* =========================================================
+   PARSE CUTOFF CELL: "37591 (88.9550679)" -> {rank, pct}
+   ========================================================= */
+function parseCutoff(raw){
+  if (raw === null || raw === undefined) return null;
+  const str = String(raw).trim();
+  if (!str) return null;
+  const m = str.match(/([\d,]+)\s*\(([\d.]+)\)/);
+  if (m){
+    return { rank: parseInt(m[1].replace(/,/g,""),10), pct: parseFloat(m[2]) };
+  }
+  const n = parseFloat(str.replace(/,/g,""));
+  if (!isNaN(n)) return { rank: n, pct: null };
+  return null;
+}
+
+/* =========================================================
+   MERIT LOGIC
+   ========================================================= */
+function computeMeritBounds(){
+  if (state.mode === "percentile"){
+    const str = (state.percentileStr||"").trim();
+    if (!str) return null;
+    const raw = parseFloat(str);
+    if (isNaN(raw) || raw < 0 || raw > 100) return null;
+
+    const decimals = str.includes(".") ? str.split(".")[1].replace(/0+$/,"").length : 0;
+    let upper;
+    if (decimals === 0)      upper = raw + 0.3;
+    else if (decimals <= 2)  upper = raw + 0.15;
+    else                     upper = Math.ceil(raw * 20) / 20; // round up to nearest 0.05
+    upper = Math.min(100, upper);
+
+    return { mode:"percentile", raw, upper };
+  } else {
+    const str = (state.rankStr||"").trim();
+    if (!str) return null;
+    const raw = parseInt(str.replace(/,/g,""), 10);
+    if (isNaN(raw) || raw <= 0) return null;
+
+    const buffer = Math.max(50, Math.round(raw * 0.02));
+    const lower = Math.max(1, raw - buffer);
+    return { mode:"rank", raw, lower, buffer };
+  }
+}
+
+/* Given the state-pool and (optionally) home-pool cutoff for a branch, pick whichever
+   is more favourable to the student — that's the "effective" cutoff we filter/sort by. */
+function effectiveCutoff(stateCutoff, homeCutoff, mode){
+  if (!stateCutoff && !homeCutoff) return null;
+  if (!homeCutoff) return stateCutoff;
+  if (!stateCutoff) return homeCutoff;
+  if (mode === "percentile"){
+    const sp = stateCutoff.pct===null ? Infinity : stateCutoff.pct;
+    const hp = homeCutoff.pct===null ? Infinity : homeCutoff.pct;
+    return sp <= hp ? stateCutoff : homeCutoff;
+  } else {
+    const sr = (stateCutoff.rank===null||stateCutoff.rank===undefined) ? -Infinity : stateCutoff.rank;
+    const hr = (homeCutoff.rank===null||homeCutoff.rank===undefined) ? -Infinity : homeCutoff.rank;
+    return sr >= hr ? stateCutoff : homeCutoff;
+  }
+}
+
+function qualifies(eff, bounds){
+  if (!eff || !bounds) return false;
+  if (bounds.mode === "percentile"){
+    return eff.pct !== null && eff.pct <= bounds.upper;
+  } else {
+    return eff.rank !== null && eff.rank !== undefined && eff.rank >= bounds.lower;
+  }
+}
+
+function classifyFit(eff, bounds){
+  if (!eff || !bounds) return null;
+  if (bounds.mode === "percentile"){
+    if (eff.pct === null) return null;
+    if (eff.pct > bounds.raw) return "reach";
+    if (bounds.raw - eff.pct <= 1.5) return "match";
+    return "safe";
+  } else {
+    if (eff.rank === null || eff.rank === undefined) return null;
+    if (eff.rank < bounds.raw) return "reach";
+    const matchBand = Math.max(300, Math.round(bounds.raw * 0.05));
+    if (eff.rank - bounds.raw <= matchBand) return "match";
+    return "safe";
+  }
+}
+
+const FIT_LABEL = { reach:"Reach", match:"Good Match", safe:"Safe" };
+
+/* =========================================================
+   MERIT METER UI (mode toggle, marker, hint text)
+   ========================================================= */
+function updateMeterUI(){
+  const label = document.getElementById("meritLabel");
+  const input = document.getElementById("meritInput");
+  const suffixHint = document.getElementById("meritHint");
+  const barWrap = document.getElementById("meterBarWrap");
+  const marker = document.getElementById("meterMarker");
+
+  if (state.mode === "percentile"){
+    label.textContent = "Your percentile";
+    input.placeholder = "e.g. 97.4428934";
+    input.value = state.percentileStr;
+    suffixHint.textContent = "Round numbers get a wider safety margin. Enter your exact percentile (as many decimals as you have) for a tighter, more accurate match.";
+    barWrap.style.display = "";
+    const raw = parseFloat(state.percentileStr);
+    const pos = (!isNaN(raw) && raw>=0 && raw<=100) ? raw : 0;
+    marker.style.left = pos + "%";
+  } else {
+    label.textContent = "Your CET rank";
+    input.placeholder = "e.g. 15342";
+    input.value = state.rankStr;
+    suffixHint.textContent = "We'll build in a small safety margin above your rank automatically — bigger for higher rank numbers.";
+    barWrap.style.display = "none";
+  }
+}
+
+document.getElementById("modeToggle").addEventListener("click", (e)=>{
+  const btn = e.target.closest("button[data-mode]");
+  if (!btn) return;
+  const mode = btn.dataset.mode;
+  if (mode === state.mode) return;
+  state.mode = mode;
+  const toggle = document.getElementById("modeToggle");
+  toggle.classList.toggle("rank-active", mode==="rank");
+  toggle.classList.toggle("percentile-active", mode==="percentile");
+  updateMeterUI();
+});
+
+document.getElementById("meritInput").addEventListener("input", (e)=>{
+  const v = e.target.value;
+  if (state.mode === "percentile") state.percentileStr = v;
+  else state.rankStr = v;
+  if (state.mode === "percentile"){
+    const raw = parseFloat(v);
+    const marker = document.getElementById("meterMarker");
+    const pos = (!isNaN(raw) && raw>=0 && raw<=100) ? raw : 0;
+    marker.style.left = pos + "%";
+  }
+});
+
+/* =========================================================
+   FETCH DATA
+   ========================================================= */
+async function fetchAll(){
+  const headers = { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` };
+  let all = [];
+  let from = 0;
+  const pageSize = 1000;
+  while(true){
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${encodeURIComponent(TABLE)}?select=*`, {
+      headers: { ...headers, Range: `${from}-${from+pageSize-1}` }
+    });
+    if (!res.ok){
+      const txt = await res.text();
+      throw new Error(`Supabase error ${res.status}: ${txt}`);
+    }
+    const chunk = await res.json();
+    all = all.concat(chunk);
+    if (chunk.length < pageSize) break;
+    from += pageSize;
+    if (from > 20000) break;
+  }
+  return all;
+}
+
+async function init(){
+  populateDistrictDropdown();
+  try{
+    allRows = await fetchAll();
+    if (!allRows.length){
+      document.getElementById("results").innerHTML = `<div class="empty-state"><h4>No data found</h4><p>The table "${TABLE}" returned zero rows. Check the table name and that RLS allows public SELECT.</p></div>`;
+      document.getElementById("resultCount").textContent = "0 results";
+      return;
+    }
+    detectColumns(allRows[0]);
+    render();
+  }catch(err){
+    document.getElementById("results").innerHTML = `<div class="empty-state"><h4>Couldn't load cutoff data</h4><p>${escapeHtml(err.message)}</p><p style="margin-top:10px;">Check that Row Level Security on "${TABLE}" allows public read access, and that the table name / API key are correct.</p></div>`;
+    document.getElementById("resultCount").textContent = "Error";
+  }
+}
+
+function populateDistrictDropdown(){
+  const sel = document.getElementById("fDistrict");
+  sel.querySelectorAll("option:not([value=''])").forEach(o=>o.remove());
+  Object.keys(DISTRICT_TO_UNIVERSITY).sort().forEach(d=>{
+    const opt = document.createElement("option");
+    opt.value = d; opt.textContent = d;
+    sel.appendChild(opt);
+  });
+}
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+function render(){
+  const resultsEl = document.getElementById("results");
+  const bounds = computeMeritBounds();
+  const errEl = document.getElementById("meritError");
+
+  if (!state.hasSearched){
+    resultsEl.innerHTML = `<div class="prompt-state">
+        <div class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+        <h4>Enter your merit above to get started</h4>
+        <p>Fill in your percentile or rank, pick your category and gender, and hit "Find my colleges" to see options within your reach.</p>
+      </div>`;
+    document.getElementById("resultCount").textContent = "Waiting for your merit…";
+    document.getElementById("fallbackBanner").style.display = "none";
+    return;
+  }
+
+  if (!bounds){
+    errEl.classList.add("show");
+    errEl.textContent = state.mode === "percentile"
+      ? "Enter a valid percentile between 0 and 100."
+      : "Enter a valid CET rank (a positive number).";
+    resultsEl.innerHTML = "";
+    document.getElementById("resultCount").textContent = "Waiting for a valid merit value…";
+    document.getElementById("fallbackBanner").style.display = "none";
+    return;
+  }
+  errEl.classList.remove("show");
+
+  const codes = resolveColumnCodes();
+  const stateColLabel = labelForColumn(codes.state);
+  const homeColLabel = labelForColumn(codes.home);
+  const userUniversity = state.district ? DISTRICT_TO_UNIVERSITY[state.district] : null;
+
+  updateFallbackBanner(codes);
+
+  const search = state.search.trim().toLowerCase();
+  let filteredRows = allRows.filter(r=>{
+    if (search){
+      const hay = `${r[nameCol]||""} ${r[codeCol]||""} ${r[branchNameCol]||""} ${r[branchCodeCol]||""}`.toLowerCase();
+      if (!hay.includes(search)) return false;
+    }
+    return true;
+  });
+
+  const groups = new Map();
+  filteredRows.forEach(r=>{
+    const stateCutoff = codes.state ? parseCutoff(r[codes.state]) : null;
+    const homeCutoff = codes.home ? parseCutoff(r[codes.home]) : null;
+    const collegeStatus = statusCol ? (r[statusCol]||"") : "";
+    const isUsersHomeUniv = userUniversity && collegeStatus.includes(userUniversity);
+    const showHome = isUsersHomeUniv && !!codes.home;
+    const eff = effectiveCutoff(stateCutoff, showHome ? homeCutoff : null, bounds.mode);
+
+    if (!qualifies(eff, bounds)) return; // not within reach at all — skip this branch
+
+    const key = `${r[codeCol]}||${r[nameCol]}`;
+    if (!groups.has(key)){
+      groups.set(key, { code: r[codeCol], name: r[nameCol], status: collegeStatus, isUsersHomeUniv, branches: [] });
+    }
+    groups.get(key).branches.push({
+      branchName: r[branchNameCol],
+      branchCode: r[branchCodeCol],
+      stateCutoff,
+      homeCutoff: showHome ? homeCutoff : null,
+      effective: eff,
+      fit: classifyFit(eff, bounds)
+    });
+  });
+
+  let collegeList = Array.from(groups.values());
+
+  if (state.sort === "name"){
+    collegeList.sort((a,b)=>(a.name||"").localeCompare(b.name||""));
+  } else if (state.sort === "safest"){
+    collegeList.sort((a,b)=> safestMetric(a,bounds) - safestMetric(b,bounds));
+  } else {
+    collegeList.sort((a,b)=> bestMetric(b,bounds) - bestMetric(a,bounds));
+  }
+
+  const meritLabel = bounds.mode === "percentile" ? `${bounds.raw}%ile` : `Rank ${bounds.raw.toLocaleString()}`;
+  document.getElementById("resultCount").innerHTML = `<b>${collegeList.length}</b> college${collegeList.length!==1?'s':''} within reach of <b>${meritLabel}</b>`;
+
+  if (!collegeList.length){
+    resultsEl.innerHTML = `<div class="empty-state"><h4>No matches yet</h4><p>Try a different category/gender, or double-check your merit value. If your merit is on the lower side for this category, very few (or zero) seats may show up.</p></div>`;
+    return;
+  }
+
+  resultsEl.innerHTML = collegeList.map(c=>{
+    const branchesSorted = c.branches.slice().sort((a,b)=>{
+      // toughest (closest to/above merit) branches first within a college too
+      if (bounds.mode === "percentile"){
+        return (b.effective.pct ?? -1) - (a.effective.pct ?? -1);
+      }
+      return (a.effective.rank ?? Infinity) - (b.effective.rank ?? Infinity);
+    });
+
+    const branchHtml = branchesSorted.map(b=>{
+      const fitClass = b.fit ? `fit-${b.fit}` : "";
+      const fitBadge = b.fit ? `<span class="fit-badge fit-${b.fit}">${FIT_LABEL[b.fit]}</span>` : "";
+
+      const stateBlock = b.stateCutoff
+        ? `<div class="cutoff-result">
+             <span class="catlabel">${stateColLabel}<span class="poollabel">STATE</span></span>
+             ${b.stateCutoff.pct!==null ? `<span class="pct">${b.stateCutoff.pct.toFixed(7)}<span class="pctsign">%</span></span>` : ``}
+             <span class="rank">rank ${b.stateCutoff.rank.toLocaleString()}</span>
+           </div>`
+        : `<div class="cutoff-result"><span class="catlabel" style="font-style:italic;">No State-level seat filled</span></div>`;
+
+      const homeBlock = b.homeCutoff
+        ? `<div class="cutoff-result home-result">
+             <span class="catlabel">${homeColLabel}<span class="poollabel home">HOME UNIV</span></span>
+             ${b.homeCutoff.pct!==null ? `<span class="pct">${b.homeCutoff.pct.toFixed(7)}<span class="pctsign">%</span></span>` : ``}
+             <span class="rank">rank ${b.homeCutoff.rank.toLocaleString()}</span>
+           </div>`
+        : ``;
+
+      return `<div class="branch-row ${fitClass}">
+          <div>
+            <div class="bname">${escapeHtml(b.branchName||"")}</div>
+            <div class="bcode">${escapeHtml(b.branchCode||"")}</div>
+            ${fitBadge}
+          </div>
+          <div class="cutoff-stack">
+            ${stateBlock}
+            ${homeBlock}
+          </div>
+        </div>`;
+    }).join("");
+
+    const homeBadge = c.isUsersHomeUniv ? `<span class="home-badge">Your Home University</span>` : ``;
+
+    return `<div class="college-card">
+      <div class="college-card-top">
+        <div>
+          <div class="college-name">${escapeHtml(c.name||"Unnamed College")} ${homeBadge}</div>
+          <div class="college-meta">${escapeHtml(c.status||"")}</div>
+        </div>
+        <div class="code-chip">Code ${escapeHtml(c.code||"—")}</div>
+      </div>
+      <div class="branch-list">
+        ${branchHtml}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function bestMetric(c, bounds){
+  if (bounds.mode === "percentile"){
+    let max = -1;
+    c.branches.forEach(b=>{ if (b.effective && b.effective.pct!==null) max = Math.max(max, b.effective.pct); });
+    return max;
+  } else {
+    let min = Infinity, any=false;
+    c.branches.forEach(b=>{ if (b.effective && b.effective.rank!==null && b.effective.rank!==undefined){ min = Math.min(min, b.effective.rank); any=true; } });
+    return any ? -min : -Infinity; // negate so ascending numeric sort ~ "best first" when combined below
+  }
+}
+function safestMetric(c, bounds){
+  if (bounds.mode === "percentile"){
+    let min = 101;
+    c.branches.forEach(b=>{ if (b.effective && b.effective.pct!==null) min = Math.min(min, b.effective.pct); });
+    return min;
+  } else {
+    let max = -1;
+    c.branches.forEach(b=>{ if (b.effective && b.effective.rank!==null && b.effective.rank!==undefined) max = Math.max(max, b.effective.rank); });
+    return -max;
+  }
+}
+
+/* =========================================================
+   FALLBACK BANNER (e.g. GOBCS not available -> GOPENS used)
+   ========================================================= */
+function updateFallbackBanner(codes){
+  const banner = document.getElementById("fallbackBanner");
+  const textEl = document.getElementById("fallbackText");
+  const menuTitle = document.getElementById("fallbackMenuTitle");
+  const menuList = document.getElementById("fallbackMenuList");
+
+  const isOverride = !!state.override;
+  const isFallback = !!codes.fallback;
+
+  if (!isOverride && !isFallback){
+    banner.style.display = "none";
+    closeFallbackMenu();
+    return;
+  }
+
+  banner.style.display = "flex";
+  banner.classList.toggle("is-override", isOverride);
+
+  if (isFallback){
+    textEl.innerHTML = `<span class="warn-dot"></span>Unable to fetch <b>${escapeHtml(codes.fallback.requested)}</b> cutoffs — showing <b>${escapeHtml(codes.fallback.used)}</b> instead`;
+    menuTitle.textContent = `Unable to fetch ${codes.fallback.requested} cutoffs!`;
+  } else {
+    textEl.innerHTML = `<span class="warn-dot"></span>Showing <b>${escapeHtml(labelForColumn(codes.state))}</b> (manually selected)`;
+    menuTitle.textContent = `Pick a different field to display`;
+  }
+
+  const currentCol = codes.state;
+  const otherCols = colKeys.filter(k => k !== currentCol).sort((a,b)=>a.localeCompare(b));
+
+  if (!otherCols.length){
+    menuList.innerHTML = `<div class="fallback-menu-empty">No other fields available in this table.</div>`;
+  } else {
+    menuList.innerHTML = otherCols.map(k=>
+      `<div class="fallback-menu-item" data-col="${escapeHtml(k)}">${escapeHtml(labelForColumn(k))}</div>`
+    ).join("");
+  }
+
+  document.getElementById("fallbackResetItem").style.display = isOverride ? "block" : "none";
+}
+
+function closeFallbackMenu(){
+  const menu = document.getElementById("fallbackMenu");
+  const arrow = document.getElementById("fallbackArrowBtn");
+  menu.style.display = "none";
+  arrow.classList.remove("open");
+}
+
+document.getElementById("fallbackArrowBtn").addEventListener("click", (e)=>{
+  e.stopPropagation();
+  const menu = document.getElementById("fallbackMenu");
+  const arrow = document.getElementById("fallbackArrowBtn");
+  const willOpen = menu.style.display !== "block";
+  menu.style.display = willOpen ? "block" : "none";
+  arrow.classList.toggle("open", willOpen);
+});
+
+document.getElementById("fallbackMenuList").addEventListener("click", (e)=>{
+  const item = e.target.closest(".fallback-menu-item");
+  if (!item) return;
+  state.override = item.dataset.col;
+  closeFallbackMenu();
+  render();
+});
+
+document.getElementById("fallbackResetItem").addEventListener("click", ()=>{
+  state.override = null;
+  closeFallbackMenu();
+  render();
+});
+
+document.addEventListener("click", (e)=>{
+  const banner = document.getElementById("fallbackBanner");
+  if (!banner.contains(e.target)) closeFallbackMenu();
+});
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+document.getElementById("fCategory").addEventListener("change", e=>{ state.category = e.target.value; state.override = null; });
+document.getElementById("sortBy").addEventListener("change", e=>{ state.sort = e.target.value; render(); });
+
+document.getElementById("fDistrict").addEventListener("change", e=>{ state.district = e.target.value; });
+
+document.getElementById("fGender").addEventListener("click", e=>{
+  const pill = e.target.closest(".pill");
+  if (!pill) return;
+  document.querySelectorAll("#fGender .pill").forEach(p=>p.classList.remove("active"));
+  pill.classList.add("active");
+  state.gender = pill.dataset.val;
+  state.override = null;
+});
+
+document.getElementById("quotaToggleLink").addEventListener("click", ()=>{
+  const link = document.getElementById("quotaToggleLink");
+  const panel = document.getElementById("quotaPanel");
+  const willOpen = !panel.classList.contains("show");
+  panel.classList.toggle("show", willOpen);
+  link.classList.toggle("open", willOpen);
+});
+
+document.getElementById("quotaPanel").addEventListener("click", e=>{
+  const chip = e.target.closest(".quota-chip");
+  if (!chip) return;
+  const flag = chip.dataset.flag;
+  state.flags[flag] = !state.flags[flag];
+  chip.classList.toggle("on", state.flags[flag]);
+  state.override = null;
+});
+
+let searchTimer;
+document.getElementById("collegeSearch").addEventListener("input", e=>{
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(()=>{ state.search = e.target.value; render(); }, 180);
+});
+
+document.getElementById("predictBtn").addEventListener("click", ()=>{
+  state.hasSearched = true;
+  render();
+});
+
+updateMeterUI();
+init();
+</script>
+</body>
+</html>
