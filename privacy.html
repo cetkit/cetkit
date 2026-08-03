@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light only" />
+<title>Privacy Policy — CETkit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #f5f4f0;
+    --surface:   #ffffff;
+    --border:    #e2dfd8;
+    --muted:     #9e9a93;
+    --text:      #1a1917;
+    --subtext:   #5c5852;
+    --accent:    #1c4ed8;
+    --accent-lt: #eff3ff;
+    --accent-dk: #1239a8;
+    --warn:      #92400e;
+    --warn-bg:   #fffbeb;
+    --warn-bd:   #fde68a;
+    --green:     #166534;
+    --green-bg:  #f0fdf4;
+    --green-bd:  #bbf7d0;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,.10), 0 1px 4px rgba(0,0,0,.06);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,.14), 0 4px 12px rgba(0,0,0,.07);
+    --radius:    14px;
+    --transition: .3s cubic-bezier(.4,0,.2,1);
+  }
+
+  html { font-size: 87%; }
+  html, body { min-height: 100%; background: var(--bg); color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+
+  body {
+    background-image: radial-gradient(circle, #c8c4bc 1px, transparent 1px);
+    background-size: 28px 28px; background-attachment: fixed;
+  }
+
+  .wrap { max-width: 780px; margin: 0 auto; padding: 3.2rem 1.6rem 5rem; }
+
+  header.top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 2.4rem; gap: 1rem; flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: .6rem; }
+  .brand-mark {
+    width: 34px; height: 34px; border-radius: 9px; background: var(--accent);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .brand-name { font-weight: 600; font-size: .95rem; letter-spacing: .01em; }
+  .brand-sub { font-size: .68rem; color: var(--muted); text-transform: uppercase; letter-spacing: .09em; }
+  a.back {
+    font-size: .78rem; color: var(--accent); text-decoration: none;
+    display: inline-flex; align-items: center; gap: .35rem; font-weight: 500;
+    padding: .5rem .9rem; border: 1px solid var(--border); border-radius: 10px;
+    background: var(--surface); box-shadow: var(--shadow-sm); transition: var(--transition);
+  }
+  a.back:hover { border-color: #bfcbf5; background: var(--accent-lt); }
+
+  .hero {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); padding: 2.2rem 1.9rem; margin-bottom: 1.6rem;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: .4rem; font-size: .68rem;
+    text-transform: uppercase; letter-spacing: .1em; color: var(--accent);
+    background: var(--accent-lt); border: 1px solid #c7d2fe; border-radius: 999px;
+    padding: .28rem .7rem; margin-bottom: 1rem; font-weight: 600;
+  }
+  h1 { font-family: 'Playfair Display', serif; font-size: 1.85rem; line-height: 1.25; margin-bottom: .6rem; }
+  .hero p.lead { color: var(--subtext); font-size: .92rem; line-height: 1.65; max-width: 640px; }
+  .meta-row { display: flex; gap: 1.4rem; margin-top: 1.2rem; flex-wrap: wrap; }
+  .meta-item { font-size: .74rem; color: var(--muted); }
+  .meta-item strong { color: var(--text); font-weight: 600; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); padding: 1.8rem 1.9rem; margin-bottom: 1.2rem;
+  }
+  .card h2 {
+    font-size: 1.05rem; font-weight: 700; margin-bottom: .5rem;
+    display: flex; align-items: center; gap: .55rem;
+  }
+  .card h2 .num {
+    width: 24px; height: 24px; border-radius: 7px; background: var(--accent-lt);
+    color: var(--accent); font-size: .72rem; font-weight: 700; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace;
+  }
+  .card h3 { font-size: .86rem; font-weight: 600; margin: 1rem 0 .4rem; color: var(--text); }
+  .card p, .card li { font-size: .84rem; line-height: 1.72; color: var(--subtext); }
+  .card p + p { margin-top: .6rem; }
+  .card ul, .card ol { margin: .3rem 0 .3rem 1.1rem; }
+  .card li { margin-bottom: .4rem; }
+  .card li::marker { color: var(--accent); }
+  code, .mono { font-family: 'IBM Plex Mono', monospace; font-size: .78rem; background: #f0ede8; padding: .1rem .35rem; border-radius: 5px; color: var(--accent-dk); }
+
+  table.data-table { width: 100%; border-collapse: collapse; margin: .8rem 0 .4rem; font-size: .8rem; }
+  table.data-table th, table.data-table td { text-align: left; padding: .55rem .6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.data-table th { font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+  table.data-table td { color: var(--subtext); }
+  table.data-table tr:last-child td { border-bottom: none; }
+
+  .notice {
+    border-radius: 10px; padding: .85rem 1rem; font-size: .8rem; line-height: 1.6;
+    margin: .8rem 0; border: 1px solid;
+  }
+  .notice.info { background: var(--accent-lt); border-color: #c7d2fe; color: #1e3a8a; }
+  .notice.warn { background: var(--warn-bg); border-color: var(--warn-bd); color: var(--warn); }
+  .notice.green { background: var(--green-bg); border-color: var(--green-bd); color: var(--green); }
+  .notice strong { display: block; margin-bottom: .25rem; font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; }
+
+  .pill-row { display: flex; gap: .5rem; flex-wrap: wrap; margin: .6rem 0; }
+  .pill {
+    font-size: .72rem; font-weight: 500; padding: .3rem .7rem; border-radius: 999px;
+    background: #f0ede8; border: 1px solid var(--border); color: var(--subtext);
+  }
+
+  .contact-box {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    flex-wrap: wrap; background: var(--accent-lt); border: 1px solid #c7d2fe;
+    border-radius: 12px; padding: 1.1rem 1.3rem;
+  }
+  .contact-box .ct-label { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: #1e3a8a; font-weight: 600; margin-bottom: .2rem; }
+  .contact-box .ct-value { font-size: .88rem; color: var(--text); font-weight: 500; }
+  .wa-link {
+    display: inline-flex; align-items: center; gap: .5rem; background: #1c4ed8; color: #fff;
+    text-decoration: none; font-size: .82rem; font-weight: 600; padding: .6rem 1.1rem;
+    border-radius: 10px; box-shadow: var(--shadow-sm); transition: var(--transition); flex-shrink: 0;
+  }
+  .wa-link:hover { background: var(--accent-dk); }
+
+  footer.foot {
+    text-align: center; margin-top: 2.2rem; font-size: .74rem; color: var(--muted);
+    line-height: 1.7;
+  }
+  footer.foot .credit { font-weight: 500; color: var(--subtext); }
+
+  @media (max-width: 560px) {
+    .wrap { padding: 2.2rem 1.1rem 4rem; }
+    .hero { padding: 1.7rem 1.4rem; }
+    .card { padding: 1.4rem 1.4rem; }
+    h1 { font-size: 1.5rem; }
+    .contact-box { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="brand-mark">V</div>
+      <div>
+        <div class="brand-name">CETkit</div>
+        <div class="brand-sub">MHT-CET Exam Suite</div>
+      </div>
+    </div>
+    <a class="back" href="index.html">← Back to Gateway</a>
+  </header>
+
+  <div class="hero">
+    <span class="hero-tag">🔒 Privacy Policy</span>
+    <h1>How CETkit handles your data</h1>
+    <p class="lead">CETkit is a set of free and premium MHT-CET exam-prep tools — a CBT simulator, rank predictor, college predictor, and cutoff explorer. This page explains, tool by tool, exactly what information is collected, why, where it's stored, and how you can control it.</p>
+    <div class="meta-row">
+      <div class="meta-item">Effective date: <strong>August 3, 2026</strong></div>
+      <div class="meta-item">Applies to: <strong>index.html · exam.html · rank-predictor.html · college-predictor.html · cutoff-explorer.html</strong></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">1</span> Who this covers</h2>
+    <p>This policy covers all pages of the CETkit platform: the <strong>Gateway</strong> (<code>index.html</code>) where you sign in and unlock exams, the <strong>CBT Simulator</strong> (<code>exam.html</code>) where you attempt papers, and three standalone reference tools — the <strong>Rank Predictor</strong>, <strong>College Predictor</strong>, and <strong>Cutoff Explorer</strong>. CETkit is an independent, unofficial exam-practice resource and is not affiliated with the State CET Cell, Maharashtra, or any government body.</p>
+    <p>CETkit is built and maintained by the CETkit Team. If anything below is unclear, the email address at the bottom of this page is the fastest way to reach us.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">2</span> Data collected on the Gateway (index.html)</h2>
+    <h3>Sign-in (Google OAuth via Supabase)</h3>
+    <p>Signing in uses Google OAuth through Supabase Auth. This gives CETkit your <strong>name, email address, and Google account profile picture</strong>, which are used only to identify your account, display your name/avatar in the header, and gate access to exam content. CETkit never sees or stores your Google password.</p>
+    <h3>Access / premium status</h3>
+    <p>Your email is stored in a <code>profiles</code> table in Supabase to record whether you have premium access. No payment card or bank details are ever collected by CETkit itself — see Section 4 for how payment actually works.</p>
+    <table class="data-table">
+      <tr><th>Data</th><th>Source</th><th>Purpose</th><th>Stored where</th></tr>
+      <tr><td>Name, email, avatar</td><td>Google OAuth</td><td>Identify account, show profile in header</td><td>Supabase Auth</td></tr>
+      <tr><td>Email + access flag</td><td>Your sign-in</td><td>Unlock/lock premium exams</td><td>Supabase <code>profiles</code> table</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">3</span> Data collected in the CBT Simulator (exam.html)</h2>
+    <p>When you launch a paper from the Gateway, your email is passed along in the page URL so the simulator knows whose attempt to save. If you open the simulator without an email (e.g. a direct link with no sign-in), your progress simply isn't synced anywhere — it stays in that browser tab only, and is lost when you close it.</p>
+    <h3>What gets saved per attempt</h3>
+    <ul>
+      <li>Your email and the specific paper/shift you're attempting</li>
+      <li>Your answer to every question, updated automatically roughly every 2.5 minutes while the exam is running</li>
+      <li>Your computed Physics, Chemistry, and Mathematics scores and total score</li>
+      <li>Whether the attempt was marked completed</li>
+    </ul>
+    <p>Starting a fresh attempt on a paper you've already taken <strong>erases your previous saved attempt for that paper</strong> before the new one is recorded — only your most recent attempt per paper is kept.</p>
+    <h3>Post-exam survey</h3>
+    <p>After submitting, you're asked to optionally rate the paper (star rating) and leave written feedback. This is used only to improve the simulations and is not linked to your identity in any public or shared way.</p>
+    <div class="notice info"><strong>Analysis mode</strong> When you revisit a completed paper for review, the simulator fetches your saved answers back from Supabase using your email and the paper name, so you can see your annotated results again.</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">4</span> Payments (UPI / WhatsApp verification)</h2>
+    <p>Premium access (a one-time ₹99 unlock) is handled entirely outside CETkit's own systems:</p>
+    <ol>
+      <li>You pay via any UPI app (Google Pay, PhonePe, Paytm, etc.) directly to the listed UPI ID — this transaction is processed by your UPI app and bank, not by CETkit.</li>
+      <li>You then send your <strong>payment screenshot and email address</strong> over WhatsApp to confirm the payment.</li>
+      <li>Access is manually verified and switched on for your account in the <code>profiles</code> table.</li>
+    </ol>
+    <div class="notice warn"><strong>What this means for you</strong> CETkit never receives or stores your card, UPI PIN, or bank account details — that data never leaves your UPI app. The payment screenshot you send is only used to confirm your ₹99 payment and enable your account; it is handled over WhatsApp, a service operated by WhatsApp/Meta and governed by their own privacy policy.</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">5</span> Rank Predictor</h2>
+    <p>The Rank Predictor runs <strong>entirely in your browser</strong>. The percentile you type in is used only to interpolate against a locally embedded 2026 merit-list dataset to estimate a rank range. Nothing you enter is sent to any server, saved, or linked to your identity — it disappears the moment you close or refresh the tab.</p>
+    <div class="pill-row"><span class="pill">No sign-in required</span><span class="pill">No data leaves your browser</span><span class="pill">Nothing saved</span></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">6</span> College Predictor &amp; Cutoff Explorer</h2>
+    <p>Both tools work the same way from a privacy standpoint. They load a public reference dataset of <strong>CAP Round I cutoff ranks/percentiles by college, branch, category, and gender</strong> from Supabase, and let you filter it using the percentile, rank, category, gender, or search terms you type in.</p>
+    <p><strong>None of the values you type into these tools are sent anywhere.</strong> Your percentile, rank, category, and search queries are used purely to filter data already loaded into your browser, and are never transmitted to Supabase, saved in a database, or associated with your account — even if you happen to be signed in elsewhere on the site.</p>
+    <div class="notice green"><strong>Data accuracy note</strong> The cutoff and college data itself is historical/reference information provided for guidance only. It is not official and should always be verified against the official CAP brochure before making admission decisions.</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">7</span> Cookies &amp; local storage</h2>
+    <p>CETkit does not use tracking cookies or third-party advertising/analytics scripts. Supabase Auth uses its own session storage in your browser purely to keep you signed in between visits — this holds an authentication token, not personal content, and is cleared when you sign out.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">8</span> Third parties involved</h2>
+    <table class="data-table">
+      <tr><th>Service</th><th>Role</th></tr>
+      <tr><td>Supabase</td><td>Authentication, and storage of your profile/access status and exam attempts</td></tr>
+      <tr><td>Google</td><td>OAuth sign-in provider — supplies your name, email, and avatar when you sign in with Google</td></tr>
+      <tr><td>Your UPI app &amp; bank</td><td>Processes the ₹99 premium payment; CETkit never sees your bank/card details</td></tr>
+      <tr><td>WhatsApp (Meta)</td><td>Used to send your payment screenshot and email for manual access verification</td></tr>
+      <tr><td>cdn.quizrr.in and similar CDNs</td><td>Serve diagram/question images embedded in some papers</td></tr>
+    </table>
+    <p>Each of these operates under its own privacy policy for the data it handles on their platforms.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">9</span> Data retention &amp; your choices</h2>
+    <ul>
+      <li>Your account, profile/access status, and most recent attempt per paper are kept for as long as your account exists.</li>
+      <li>Starting a new attempt on a paper deletes the previous saved attempt for that paper automatically.</li>
+      <li>You can ask to have your account and all associated attempt data deleted at any time — see contact details below.</li>
+      <li>Signing out clears your local session; it does not delete data already saved in Supabase.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">10</span> Children's use</h2>
+    <p>CETkit is built for MHT-CET aspirants, many of whom are minors preparing for entrance exams. Sign-in only collects the name/email your Google account already provides, and no additional personal information is requested. Parents or guardians with questions about a student's data are welcome to reach out using the contact details below.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">11</span> Changes to this policy</h2>
+    <p>This policy may be updated as CETkit adds new tools or features. The "Effective date" at the top of this page will always reflect the latest revision. Continued use of the platform after an update means you accept the revised policy.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">12</span> Contact</h2>
+    <p>For privacy questions, data deletion requests, or anything else about how your information is handled, reach out directly:</p>
+    <div class="contact-box">
+      <div>
+        <div class="ct-label">Contact</div>
+        <div class="ct-value">CETkit Team</div>
+      </div>
+      <a class="wa-link" href="mailto:cetkit00@gmail.com">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        cetkit00@gmail.com
+      </a>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <p>CETkit — an independent MHT-CET exam-prep resource.</p>
+    <p class="credit">CETkit Team</p>
+  </footer>
+
+</div>
+</body>
+</html>
