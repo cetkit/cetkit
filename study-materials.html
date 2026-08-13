@@ -367,8 +367,15 @@ async function fetchPdf(item){
   const variants=subjectVariants(item.subject,canon), file=item.file_name;
   const seen=new Set(), paths=[];
   const push=p=>{ if(!seen.has(p)){seen.add(p);paths.push(p);} };
+  /* Confirmed repo layout: lowercase "shortnotes/" + capitalized subject folder
+     (e.g. shortnotes/Physics/Wave Optics.pdf). Try that exact path first — the
+     old code tried a guessed "ShortNotes/..." (capital) variant FIRST, which
+     always 404'd and could poison GitHub's CDN cache for the very next,
+     correct-case request, causing intermittent failures even though the file
+     genuinely exists. */
+  for(const s of variants) push('shortnotes/'+s+'/'+file);
   if(storageHint) for(const s of variants) push(storageHint+'/'+s+'/'+file);
-  for(const s of variants){ push('ShortNotes/'+s+'/'+file); push('shortnotes/'+s+'/'+file); }
+  for(const s of variants) push('ShortNotes/'+s+'/'+file);
   for(const p of paths){
     const blob=await tryFetch(p);
     if(blob){
@@ -376,7 +383,7 @@ async function fetchPdf(item){
       return blob;
     }
   }
-  throw new Error(`File "${file}" not found. Expected it at ShortNotes/${canon}/${file} in this repo.`);
+  throw new Error(`File "${file}" not found. Expected it at shortnotes/${canon}/${file} in this repo.`);
 }
 
 /* ================= VIEW SWITCHING ================= */
