@@ -384,7 +384,11 @@ function setReading(on){
   document.body.classList.toggle('reading',on);
   $('#viewReader').hidden=!on; $('#viewList').style.display=on?'none':'';
   document.title=on?`${currentOpen?.chapter||'Reader'} · CETkit`:'Short Notes · CETkit';
-  if(on) setTimeout(()=>renderPage(),60);
+  /* openChapter() already calls renderPage() itself once the PDF is ready —
+     a second unconditional renderPage() used to fire here on a timer, which
+     could collide with that one (pdf.js throws if render() is called twice
+     concurrently on the same canvas) and pop the error box even though the
+     other call had already rendered the page successfully. */
 }
 $('#logoBtn').onclick=()=>{ if(document.body.classList.contains('reading')) backToList(); };
 $('#backToList').onclick=backToList;
