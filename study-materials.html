@@ -62,6 +62,13 @@ button{font-family:inherit;color:inherit}
 .hl{background:var(--yellow);color:#0d1526;padding:0 .12em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;flex:none}
 
+.ai-notice{
+  text-align:center;font-size:11px;letter-spacing:.02em;line-height:1.5;
+  padding:6px 16px;background:var(--yellow);color:#0d1526;
+  border-bottom:2px solid #0d1526;position:relative;z-index:60;
+}
+body.dark .ai-notice{background:#3a2f00;color:#ffd60a;border-bottom-color:#000}
+
 /* ============ HEADER ============ */
 header{
   position:sticky;top:0;z-index:50;background:var(--bg);
@@ -166,6 +173,8 @@ body.dark #pdfCanvas{filter:invert(1) hue-rotate(180deg);background:#fff}
 </head>
 <body>
 
+<div class="ai-notice mono" role="note">These short notes were prepared with AI assistance and manually checked — but small mistakes may still slip through. Please cross-verify anything critical.</div>
+
 <div class="wm" aria-hidden="true">
   <span style="top:12%;left:4%">∫₀^∞ e⁻ˣ dx = 1</span>
   <span style="top:26%;right:5%">ΔG = ΔH − TΔS</span>
@@ -212,6 +221,7 @@ body.dark #pdfCanvas{filter:invert(1) hue-rotate(180deg);background:#fff}
     <span class="circled">MHT-CET<svg viewBox="0 0 300 120" preserveAspectRatio="none"><path d="M18,62 C14,18 288,8 292,52 C296,102 30,114 14,70" fill="none" stroke="var(--red)" stroke-width="4" stroke-linecap="round"/></svg></span>
   </h1>
   <p class="lede">Chapter-wise PDF short notes for Physics, Chemistry &amp; Maths — served straight from our storage, read right here in the browser. <span class="hl">100% free</span>, no login, no downloads, no drama.</p>
+  <p class="lede mono" style="font-size:12.5px;letter-spacing:.03em;margin-top:-10px">📊 Chapters below are arranged weightage-wise — highest-weightage topics first.</p>
   <div class="hero-cta">
     <button class="btn btn-yellow" id="jumpBtn">BROWSE NOTES ↓</button>
   </div>
@@ -278,6 +288,7 @@ const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>
 let rows=[], currentTab='Physics';
 let pdf=null, renderTask=null, pageNum=1, pageCount=1;
 let zoom=1, renderedZoom=1, tx=0, ty=0, renderTimer=null, storageHint=null, currentOpen=null;
+let loadGen=0; /* guards against two openChapter() calls racing (e.g. a double-tap firing two click events) */
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 /* ================= DARK MODE (AMOLED) ================= */
@@ -303,7 +314,7 @@ async function loadMaterials(){
   const grid=$('#grid');
   grid.innerHTML='<div class="loadbox"><div class="spin"></div><p class="mono">CHECKING CETkit STORAGE…</p></div>';
   try{
-    const res=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=subject,chapter,file_name`,
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=subject,chapter,file_name,chapter_order`,
       {headers:{apikey:SUPABASE_ANON,Authorization:`Bearer ${SUPABASE_ANON}`}});
     if(!res.ok) throw new Error('Supabase responded '+res.status);
     rows=await res.json();
@@ -312,7 +323,7 @@ async function loadMaterials(){
     grid.innerHTML=`<div class="loadbox"><p class="mono" style="color:var(--red)">⚠ COULDN'T REACH SUPABASE (${esc(e.message)})</p><br><button class="btn btn-yellow" onclick="loadMaterials()">RETRY ↻</button></div>`;
   }
 }
-function rowsFor(subj){ return rows.filter(r=>canonSubject(r.subject)===subj).sort((a,b)=>String(a.chapter).localeCompare(String(b.chapter))); }
+function rowsFor(subj){ return rows.filter(r=>canonSubject(r.subject)===subj).sort((a,b)=>(Number(a.chapter_order)||999)-(Number(b.chapter_order)||999)); }
 function renderTabs(){
   document.querySelectorAll('.tab').forEach(t=>{
     const n=rowsFor(t.dataset.subj).length;
@@ -378,6 +389,7 @@ function setReading(on){
 $('#logoBtn').onclick=()=>{ if(document.body.classList.contains('reading')) backToList(); };
 $('#backToList').onclick=backToList;
 function backToList(){
+  loadGen++; /* invalidate any in-flight openChapter() call */
   setReading(false);
   if(renderTask){try{renderTask.cancel()}catch(e){}}
   if(pdf){pdf.destroy();pdf=null;}
@@ -385,22 +397,30 @@ function backToList(){
 
 /* ================= CUSTOM PDF READER ================= */
 async function openChapter(item){
+  const myGen=++loadGen;
   currentOpen=item; setReading(true);
   $('#loader').style.display='flex'; $('#errBox').hidden=true;
   $('#loaderTxt').textContent='FETCHING '+String(item.file_name).toUpperCase()+'…';
   try{
     const blob=await fetchPdf(item);
+    if(myGen!==loadGen) return; /* a newer open request has taken over — drop this one */
     const buf=await blob.arrayBuffer();
-    if(pdf){pdf.destroy();pdf=null;}
-    pdf=await pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise;
+    if(myGen!==loadGen) return;
+    const newPdf=await pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise;
+    if(myGen!==loadGen){ newPdf.destroy(); return; }
+    if(pdf){pdf.destroy();}
+    pdf=newPdf;
     pageCount=pdf.numPages; pageNum=1; zoom=1; renderedZoom=1; tx=ty=0;
     $('#rChapter').textContent=String(item.chapter||item.file_name).toUpperCase();
     $('#rSubject').textContent=(canonSubject(item.subject)||'').toUpperCase();
     await renderPage();
   }catch(e){
+    if(myGen!==loadGen) return; /* stale failure from a superseded call — ignore it */
     $('#errMsg').textContent=e.message||String(e);
     $('#errBox').hidden=false;
-  }finally{ $('#loader').style.display='none'; }
+  }finally{
+    if(myGen===loadGen) $('#loader').style.display='none';
+  }
 }
 $('#retryBtn').onclick=()=>{ if(currentOpen) openChapter(currentOpen); };
 $('#errClose').onclick=backToList;
