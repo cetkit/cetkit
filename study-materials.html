@@ -267,8 +267,8 @@ body.dark #pdfCanvas{filter:invert(1) hue-rotate(180deg);background:#fff}
 const SUPABASE_URL = "https://ckwpllmgvopiucsqqmkn.supabase.co";
 const SUPABASE_ANON = "sb_publishable_K9ggT2F_WHwSBgIj4mHFBg_afApiIJF";
 const TABLE = "materialStatusSN";
-/* Storage layout expected:  <bucket>/ShortNotes/<Subject>/<file_name>
-   The bucket name + folder prefix are AUTO-DETECTED on first open (see fetchPdf). */
+/* PDFs are served as static files from this repo, not Supabase Storage —
+   expected layout:  ShortNotes/<Subject>/<file_name>  (relative to site root) */
 
 const $ = s => document.querySelector(s);
 const stage=$('#stage'), wrap=$('#pageWrap'), canvas=$('#pdfCanvas'), ctx=canvas.getContext('2d');
@@ -335,12 +335,13 @@ function renderCards(){
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{currentTab=t.dataset.subj;renderTabs();renderCards();});
 $('#jumpBtn').onclick=()=>$('#panel').scrollIntoView({behavior:'smooth'});
 
-/* ================= SUPABASE STORAGE: FETCH PDF ================= */
-async function tryFetch(bucket,path){
+/* ================= FETCH PDF (served directly by GitHub Pages) ================= */
+/* PDFs live in this same repo under ShortNotes/<Subject>/<file_name> and are
+   served as static files by GitHub Pages — no Supabase Storage involved. */
+async function tryFetch(path){
   const p=path.split('/').map(encodeURIComponent).join('/');
   try{
-    const res=await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${p}`,
-      {headers:{apikey:SUPABASE_ANON,Authorization:`Bearer ${SUPABASE_ANON}`}});
+    const res=await fetch(p);
     if(res.ok){ const b=await res.blob(); if(b.size>0) return b; }
   }catch(e){}
   return null;
@@ -353,20 +354,18 @@ function subjectVariants(raw,canon){
 async function fetchPdf(item){
   const canon=canonSubject(item.subject)||'Physics';
   const variants=subjectVariants(item.subject,canon), file=item.file_name;
-  const seen=new Set(), combos=[];
-  const push=(b,p)=>{const k=b+'|'+p; if(!seen.has(k)){seen.add(k);combos.push([b,p]);}};
-  if(storageHint) for(const s of variants) push(storageHint.bucket,(storageHint.prefix?storageHint.prefix+'/':'')+s+'/'+file);
-  for(const s of variants){ push('ShortNotes',s+'/'+file); push('shortnotes',s+'/'+file); }
-  for(const b of ['notes','materials','cetkit','storage','files','bucket','study-materials','short-notes'])
-    for(const s of variants){ push(b,'ShortNotes/'+s+'/'+file); push(b,'shortnotes/'+s+'/'+file); }
-  for(const [b,p] of combos){
-    const blob=await tryFetch(b,p);
+  const seen=new Set(), paths=[];
+  const push=p=>{ if(!seen.has(p)){seen.add(p);paths.push(p);} };
+  if(storageHint) for(const s of variants) push(storageHint+'/'+s+'/'+file);
+  for(const s of variants){ push('ShortNotes/'+s+'/'+file); push('shortnotes/'+s+'/'+file); }
+  for(const p of paths){
+    const blob=await tryFetch(p);
     if(blob){
-      storageHint={bucket:b, prefix:/^shortnotes\//i.test(p)?'shortnotes':(/^ShortNotes\//.test(p)?'ShortNotes':'')};
+      storageHint=/^shortnotes\//i.test(p)?'shortnotes':'ShortNotes';
       return blob;
     }
   }
-  throw new Error(`File "${file}" not found. Expected path: <your-bucket>/ShortNotes/${canon}/${file}. Make sure the storage bucket is set to PUBLIC in Supabase.`);
+  throw new Error(`File "${file}" not found. Expected it at ShortNotes/${canon}/${file} in this repo.`);
 }
 
 /* ================= VIEW SWITCHING ================= */
