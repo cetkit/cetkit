@@ -51,10 +51,9 @@
   }
   .brand { display: flex; align-items: center; gap: .6rem; }
   .brand-mark {
-    width: 34px; height: 34px; border-radius: 9px; background: var(--accent);
-    color: #fff; display: flex; align-items: center; justify-content: center;
-    font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1rem;
+    width: 34px; height: 34px; border-radius: 9px;
     box-shadow: var(--shadow-sm);
+    object-fit: contain;
   }
   .brand-name { font-weight: 600; font-size: .95rem; letter-spacing: .01em; }
   .brand-sub { font-size: .68rem; color: var(--muted); text-transform: uppercase; letter-spacing: .09em; }
@@ -158,7 +157,7 @@
 
   <header class="top">
     <div class="brand">
-      <div class="brand-mark">V</div>
+      <img src="logo.png" class="brand-mark" alt="CETkit">
       <div>
         <div class="brand-name">CETkit</div>
         <div class="brand-sub">MHT-CET Exam Suite</div>

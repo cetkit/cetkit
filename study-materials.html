@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#edeff2">
+<title>Short Notes · CETkit</title>
+
+<!-- Fonts: design language match -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============ CETkit DESIGN TOKENS ============ */
+:root{
+  --bg:#edeff2; --grid:rgba(13,21,38,.06);
+  --ink:#0d1526; --card:#fbfbf9; --panel:#f4f5f8;
+  --yellow:#ffd60a; --red:#f0544f; --green:#22c55e;
+  --muted:#5b6472; --shadow:#0d1526;
+  --bd:2px solid var(--ink);
+}
+body.dark{
+  --bg:#000; --grid:rgba(255,255,255,.055);
+  --ink:#eaeaea; --card:#0a0a0a; --panel:#050505;
+  --muted:#98a1b3; --shadow:#27272a;
+  color-scheme:dark;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Space Grotesk',sans-serif; color:var(--ink);
+  background:
+    linear-gradient(var(--grid) 1px,transparent 1px) 0 0/26px 26px,
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/26px 26px,
+    var(--bg);
+  min-height:100vh; touch-action:manipulation;
+  transition:background .25s,color .25s;
+}
+.mono{font-family:'JetBrains Mono',monospace}
+.caveat{font-family:'Caveat',cursive}
+button{font-family:inherit;color:inherit}
+
+/* watermark formulas */
+.wm{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.wm span{position:absolute;font-family:'JetBrains Mono',monospace;color:var(--ink);opacity:.07;font-size:clamp(14px,2vw,22px);white-space:nowrap}
+
+/* ============ NEO-BRUTAL PRIMITIVES ============ */
+.nb{background:var(--card);border:var(--bd);border-radius:12px;box-shadow:4px 4px 0 var(--shadow)}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.4px;
+  padding:11px 18px;border:var(--bd);border-radius:10px;background:var(--card);
+  box-shadow:4px 4px 0 var(--shadow);text-decoration:none;color:var(--ink);
+  transition:transform .08s,box-shadow .08s;user-select:none;
+}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--shadow)}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--shadow)}
+.btn-yellow{background:var(--yellow);color:#0d1526;border-color:#0d1526;box-shadow:4px 4px 0 #0d1526}
+.btn-yellow:hover{box-shadow:5px 5px 0 #0d1526}
+.btn-yellow:active{box-shadow:1px 1px 0 #0d1526}
+.hl{background:var(--yellow);color:#0d1526;padding:0 .12em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;flex:none}
+
+/* ============ HEADER ============ */
+header{
+  position:sticky;top:0;z-index:50;background:var(--bg);
+  border-bottom:var(--bd);
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:12px clamp(14px,4vw,40px);
+}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;margin-right:auto}
+.logo-box{width:42px;height:42px;border-radius:10px;background:#0d1526;border:2px solid #0d1526;box-shadow:3px 3px 0 var(--shadow);display:grid;place-items:center}
+body.dark .logo-box{box-shadow:3px 3px 0 #333}
+.logo-txt{font-family:'Poppins',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.5px}
+.logo-txt .kit{background:var(--yellow);color:#0d1526;padding:0 5px;border-radius:4px;margin-left:2px}
+.hdr-title{display:flex;align-items:center;gap:10px;min-width:0}
+#rChapter{font-size:13px;font-weight:700;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:38vw}
+.pill-subj{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;background:var(--yellow);color:#0d1526;border:2px solid #0d1526;border-radius:6px;padding:3px 8px;flex:none}
+.hdr-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.zoomgrp{display:flex;align-items:center;gap:6px}
+.zbtn{width:36px;height:36px;padding:0;justify-content:center;font-size:16px;border-radius:9px}
+#zoomPct{font-size:11px;font-weight:700;min-width:44px;text-align:center}
+body:not(.reading) .reader-only{display:none!important}
+body.reading .list-only{display:none!important}
+
+/* ============ LIST VIEW ============ */
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:clamp(22px,5vw,56px) clamp(14px,4vw,32px) 60px}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:3px;color:var(--muted);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:26px;height:3px;background:var(--red);flex:none}
+h1{font-family:'Poppins',sans-serif;font-weight:800;font-size:clamp(2.1rem,6vw,4rem);line-height:1.08;letter-spacing:-1px;margin:16px 0 18px}
+.circled{position:relative;display:inline-block}
+.circled svg{position:absolute;left:-6%;top:-14%;width:112%;height:128%;pointer-events:none}
+.lede{max-width:560px;font-size:15.5px;line-height:1.65;color:var(--muted);margin-bottom:22px}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.note-red{color:var(--red);font-size:21px;font-weight:700;display:flex;align-items:center;gap:6px;margin:6px 0 22px}
+.pills{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:38px}
+.pill{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:600;padding:9px 15px;border:var(--bd);border-radius:999px;background:var(--card);box-shadow:3px 3px 0 var(--shadow)}
+
+/* console panel */
+.panel{overflow:hidden;border-radius:16px}
+.tabs{display:flex;border-bottom:var(--bd);background:var(--panel);overflow-x:auto}
+.tab{
+  flex:1;min-width:110px;padding:14px 10px;text-align:center;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:2px;
+  background:transparent;border:none;border-right:var(--bd);color:var(--muted);white-space:nowrap;
+}
+.tab:last-child{border-right:none}
+.tab.active{background:var(--yellow);color:#0d1526}
+.panel-body{padding:clamp(16px,3vw,28px)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
+.card{padding:18px;display:flex;flex-direction:column;gap:10px;border-radius:12px}
+.card-top{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted)}
+.card h3{font-family:'Poppins',sans-serif;font-weight:700;font-size:17px;line-height:1.25}
+.card .file{font-size:11px;color:var(--muted);word-break:break-all}
+.card .btn{margin-top:auto;justify-content:center}
+.empty,.loadbox{grid-column:1/-1;text-align:center;padding:44px 20px;color:var(--muted)}
+.spin{width:34px;height:34px;border:3px solid var(--ink);border-top-color:transparent;border-radius:50%;margin:0 auto 14px;animation:sp 0.8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+footer{margin-top:46px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--muted)}
+footer b{color:var(--ink)}
+
+/* ============ READER VIEW ============ */
+body.reading{overflow:hidden;height:100dvh;display:flex;flex-direction:column}
+#viewReader{flex:1;display:flex;flex-direction:column;min-height:0;position:relative;z-index:1}
+#stage{
+  flex:1;position:relative;overflow:hidden;touch-action:none;
+  display:flex;align-items:center;justify-content:center;
+  user-select:none;-webkit-user-select:none;min-height:0;
+}
+body.reading #stage{cursor:grab}
+body.reading #stage.panning{cursor:grabbing}
+#pageWrap{will-change:transform;transition:none}
+#pdfCanvas{display:block;border-radius:4px;box-shadow:0 0 0 2px var(--ink),8px 8px 0 var(--shadow);background:#fff;-webkit-user-drag:none}
+body.dark #pdfCanvas{filter:invert(1) hue-rotate(180deg);background:#fff}
+.nav-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:5;
+  width:52px;height:64px;font-size:26px;font-weight:700;cursor:pointer;
+  display:grid;place-items:center;border:var(--bd);border-radius:12px;
+  background:var(--card);box-shadow:4px 4px 0 var(--shadow);
+}
+.nav-arrow:hover{background:var(--yellow);color:#0d1526}
+.nav-arrow.left{left:12px}.nav-arrow.right{right:12px}
+.nav-arrow:disabled{opacity:.3;pointer-events:none}
+#pageHud{
+  position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:5;
+  font-size:11px;font-weight:700;letter-spacing:1px;padding:7px 14px;
+  border:var(--bd);border-radius:999px;background:var(--card);box-shadow:3px 3px 0 var(--shadow);
+}
+#hint{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:5;font-size:10px;letter-spacing:1px;color:var(--muted);background:var(--bg);border:1.5px dashed var(--muted);border-radius:999px;padding:5px 12px;white-space:nowrap}
+.overlay{position:absolute;inset:0;z-index:9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(2px)}
+.overlay .mono{font-size:12px;letter-spacing:1px;color:var(--muted)}
+.errcard{max-width:420px;margin:0 16px;padding:22px;text-align:center;border-radius:14px}
+.errcard p{font-size:13px;color:var(--muted);margin:8px 0 16px;line-height:1.6}
+.errcard h3{font-family:'Poppins',sans-serif}
+
+@media(max-width:720px){
+  .nav-arrow{width:40px;height:52px;font-size:20px}
+  .nav-arrow.left{left:6px}.nav-arrow.right{right:6px}
+  #hint{display:none}
+  .wm span:nth-child(even){display:none}
+  #rChapter{max-width:30vw}
+  .btn{padding:10px 13px;font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<div class="wm" aria-hidden="true">
+  <span style="top:12%;left:4%">∫₀^∞ e⁻ˣ dx = 1</span>
+  <span style="top:26%;right:5%">ΔG = ΔH − TΔS</span>
+  <span style="top:58%;left:3%">E = mc²</span>
+  <span style="top:74%;right:8%">sin²θ + cos²θ = 1</span>
+  <span style="top:88%;left:38%">π ≈ 3.14159</span>
+  <span style="top:44%;right:30%">K꜀ = [C]ᶜ[D]ᵈ/[A]ᵃ[B]ᵇ</span>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header>
+  <div class="logo" id="logoBtn" title="CETkit">
+    <div class="logo-box">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="4.5" r="2.2" fill="#ffd60a"/>
+        <path d="M11 6.5 6.5 20M13 6.5 17.5 20M8 15.5a8.5 8.5 0 0 0 8 0" stroke="#ffd60a" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="logo-txt">CET<span class="kit">kit</span></span>
+  </div>
+
+  <div class="hdr-title reader-only">
+    <span id="rChapter" class="mono">—</span>
+    <span id="rSubject" class="pill-subj">—</span>
+  </div>
+
+  <div class="hdr-actions">
+    <div class="zoomgrp reader-only">
+      <button class="btn zbtn" id="zoomOut" aria-label="Zoom out">−</button>
+      <span id="zoomPct" class="mono">100%</span>
+      <button class="btn zbtn" id="zoomIn" aria-label="Zoom in">+</button>
+      <button class="btn zbtn" id="zoomFit" aria-label="Fit page" style="font-size:11px">FIT</button>
+    </div>
+    <a class="btn list-only" id="homeBtn" href="index.htm">← BACK TO HOME</a>
+    <button class="btn reader-only" id="backToList">← NOTES</button>
+    <button class="btn" id="dmToggle">🌙 DARK</button>
+  </div>
+</header>
+
+<!-- ============ LIST VIEW ============ -->
+<main class="wrap" id="viewList">
+  <p class="eyebrow mono">MAHARASHTRA COMMON ENTRANCE TEST · STUDY MATERIAL</p>
+  <h1>The <span class="hl">Short Notes</span> vault for
+    <span class="circled">MHT-CET<svg viewBox="0 0 300 120" preserveAspectRatio="none"><path d="M18,62 C14,18 288,8 292,52 C296,102 30,114 14,70" fill="none" stroke="var(--red)" stroke-width="4" stroke-linecap="round"/></svg></span>
+  </h1>
+  <p class="lede">Chapter-wise PDF short notes for Physics, Chemistry &amp; Maths — served straight from our storage, read right here in the browser. <span class="hl">100% free</span>, no login, no downloads, no drama.</p>
+  <div class="hero-cta">
+    <button class="btn btn-yellow" id="jumpBtn">BROWSE NOTES ↓</button>
+  </div>
+  <p class="note-red caveat">free forever. no paywall, no excuses.
+    <svg width="46" height="26" viewBox="0 0 46 26" fill="none"><path d="M2 6c14 2 26 6 36 14m0 0-7-2m7 2-1-7" stroke="var(--red)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </p>
+  <div class="pills">
+    <span class="pill"><span class="dot"></span> PHYSICS · CHEM · MATHS</span>
+    <span class="pill"><span class="dot"></span> READ IN-BROWSER, FREE</span>
+    <span class="pill"><span class="dot"></span> BUILT BY ASPIRANTS, FOR ASPIRANTS</span>
+  </div>
+
+  <section class="nb panel" id="panel">
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-subj="Physics">PHYSICS</button>
+      <button class="tab" data-subj="Chemistry">CHEMISTRY</button>
+      <button class="tab" data-subj="Mathematics">MATHEMATICS</button>
+    </div>
+    <div class="panel-body"><div class="grid" id="grid"></div></div>
+  </section>
+
+  <footer>© 2026 <b>CETkit</b> · THE ULTIMATE TOOL-KIT FOR MHT-CET · EVERYTHING FREE</footer>
+</main>
+
+<!-- ============ READER VIEW ============ -->
+<section id="viewReader" hidden>
+  <div id="stage">
+    <div id="pageWrap"><canvas id="pdfCanvas"></canvas></div>
+    <button class="nav-arrow left"  id="prevPg" aria-label="Previous page">‹</button>
+    <button class="nav-arrow right" id="nextPg" aria-label="Next page">›</button>
+    <div id="hint" class="mono">SCROLL = ZOOM · DRAG = PAN · SWIPE / ‹ › = PAGES</div>
+    <div id="pageHud" class="mono">1 / 1</div>
+
+    <div class="overlay" id="loader">
+      <div class="spin"></div>
+      <p class="mono" id="loaderTxt">FETCHING NOTES…</p>
+    </div>
+    <div class="overlay" id="errBox" hidden>
+      <div class="nb errcard">
+        <h3>⚠ Couldn't load this note</h3>
+        <p id="errMsg"></p>
+        <button class="btn btn-yellow" id="retryBtn">RETRY ↻</button>
+        <button class="btn" id="errClose">BACK TO NOTES</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- pdf.js (powers the custom in-house reader; no browser/Google viewer used) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+/* ================= CONFIG ================= */
+const SUPABASE_URL = "https://ckwpllmgvopiucsqqmkn.supabase.co";
+const SUPABASE_ANON = "sb_publishable_K9ggT2F_WHwSBgIj4mHFBg_afApiIJF";
+const TABLE = "materialStatusSN";
+/* Storage layout expected:  <bucket>/ShortNotes/<Subject>/<file_name>
+   The bucket name + folder prefix are AUTO-DETECTED on first open (see fetchPdf). */
+
+const $ = s => document.querySelector(s);
+const stage=$('#stage'), wrap=$('#pageWrap'), canvas=$('#pdfCanvas'), ctx=canvas.getContext('2d');
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ================= STATE ================= */
+let rows=[], currentTab='Physics';
+let pdf=null, renderTask=null, pageNum=1, pageCount=1;
+let zoom=1, renderedZoom=1, tx=0, ty=0, renderTimer=null, storageHint=null, currentOpen=null;
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+/* ================= DARK MODE (AMOLED) ================= */
+const dmBtns=[...document.querySelectorAll('#dmToggle')];
+function setDark(on){
+  document.body.classList.toggle('dark',on);
+  document.querySelector('meta[name=theme-color]').content = on ? '#000000' : '#edeff2';
+  dmBtns.forEach(b=>b.textContent = on ? '☀️ LIGHT' : '🌙 DARK');
+  localStorage.setItem('cetkit-dark', on?'1':'0');
+}
+dmBtns.forEach(b=>b.onclick=()=>setDark(!document.body.classList.contains('dark')));
+setDark(localStorage.getItem('cetkit-dark')==='1');
+
+/* ================= SUPABASE: LIST MATERIALS ================= */
+function canonSubject(s){
+  s=(s||'').toLowerCase().trim();
+  if(s.startsWith('phy'))return 'Physics';
+  if(s.startsWith('chem'))return 'Chemistry';
+  if(s.startsWith('math'))return 'Mathematics';
+  return null;
+}
+async function loadMaterials(){
+  const grid=$('#grid');
+  grid.innerHTML='<div class="loadbox"><div class="spin"></div><p class="mono">CHECKING CETkit STORAGE…</p></div>';
+  try{
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}?select=subject,chapter,file_name`,
+      {headers:{apikey:SUPABASE_ANON,Authorization:`Bearer ${SUPABASE_ANON}`}});
+    if(!res.ok) throw new Error('Supabase responded '+res.status);
+    rows=await res.json();
+    renderTabs(); renderCards();
+  }catch(e){
+    grid.innerHTML=`<div class="loadbox"><p class="mono" style="color:var(--red)">⚠ COULDN'T REACH SUPABASE (${esc(e.message)})</p><br><button class="btn btn-yellow" onclick="loadMaterials()">RETRY ↻</button></div>`;
+  }
+}
+function rowsFor(subj){ return rows.filter(r=>canonSubject(r.subject)===subj).sort((a,b)=>String(a.chapter).localeCompare(String(b.chapter))); }
+function renderTabs(){
+  document.querySelectorAll('.tab').forEach(t=>{
+    const n=rowsFor(t.dataset.subj).length;
+    t.textContent=`${t.dataset.subj==='Mathematics'?'MATHEMATICS':t.dataset.subj.toUpperCase()} (${n})`;
+    t.classList.toggle('active',t.dataset.subj===currentTab);
+  });
+}
+function renderCards(){
+  const grid=$('#grid'), list=rowsFor(currentTab);
+  if(!list.length){ grid.innerHTML='<div class="empty"><p class="mono">NO NOTES UPLOADED YET FOR THIS SUBJECT — CHECK BACK SOON.</p></div>'; return; }
+  grid.innerHTML=list.map((r,i)=>`
+    <article class="nb card">
+      <div class="card-top mono"><span class="dot"></span> AVAILABLE · FREE</div>
+      <h3>${esc(r.chapter)}</h3>
+      <p class="file mono">📄 ${esc(r.file_name)}</p>
+      <button class="btn btn-yellow" data-open="${i}">READ NOTES ↗</button>
+    </article>`).join('');
+  grid.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openChapter(list[+b.dataset.open]));
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{currentTab=t.dataset.subj;renderTabs();renderCards();});
+$('#jumpBtn').onclick=()=>$('#panel').scrollIntoView({behavior:'smooth'});
+
+/* ================= SUPABASE STORAGE: FETCH PDF ================= */
+async function tryFetch(bucket,path){
+  const p=path.split('/').map(encodeURIComponent).join('/');
+  try{
+    const res=await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${p}`,
+      {headers:{apikey:SUPABASE_ANON,Authorization:`Bearer ${SUPABASE_ANON}`}});
+    if(res.ok){ const b=await res.blob(); if(b.size>0) return b; }
+  }catch(e){}
+  return null;
+}
+function subjectVariants(raw,canon){
+  const extra={Physics:['Physics','physics'],Chemistry:['Chemistry','chemistry'],
+    Mathematics:['Mathematics','Maths','Math','mathematics','maths']}[canon]||[];
+  return [...new Set([raw,canon,...extra].filter(Boolean))];
+}
+async function fetchPdf(item){
+  const canon=canonSubject(item.subject)||'Physics';
+  const variants=subjectVariants(item.subject,canon), file=item.file_name;
+  const seen=new Set(), combos=[];
+  const push=(b,p)=>{const k=b+'|'+p; if(!seen.has(k)){seen.add(k);combos.push([b,p]);}};
+  if(storageHint) for(const s of variants) push(storageHint.bucket,(storageHint.prefix?storageHint.prefix+'/':'')+s+'/'+file);
+  for(const s of variants){ push('ShortNotes',s+'/'+file); push('shortnotes',s+'/'+file); }
+  for(const b of ['notes','materials','cetkit','storage','files','bucket','study-materials','short-notes'])
+    for(const s of variants){ push(b,'ShortNotes/'+s+'/'+file); push(b,'shortnotes/'+s+'/'+file); }
+  for(const [b,p] of combos){
+    const blob=await tryFetch(b,p);
+    if(blob){
+      storageHint={bucket:b, prefix:/^shortnotes\//i.test(p)?'shortnotes':(/^ShortNotes\//.test(p)?'ShortNotes':'')};
+      return blob;
+    }
+  }
+  throw new Error(`File "${file}" not found. Expected path: <your-bucket>/ShortNotes/${canon}/${file}. Make sure the storage bucket is set to PUBLIC in Supabase.`);
+}
+
+/* ================= VIEW SWITCHING ================= */
+function setReading(on){
+  document.body.classList.toggle('reading',on);
+  $('#viewReader').hidden=!on; $('#viewList').style.display=on?'none':'';
+  document.title=on?`${currentOpen?.chapter||'Reader'} · CETkit`:'Short Notes · CETkit';
+  if(on) setTimeout(()=>renderPage(),60);
+}
+$('#logoBtn').onclick=()=>{ if(document.body.classList.contains('reading')) backToList(); };
+$('#backToList').onclick=backToList;
+function backToList(){
+  setReading(false);
+  if(renderTask){try{renderTask.cancel()}catch(e){}}
+  if(pdf){pdf.destroy();pdf=null;}
+}
+
+/* ================= CUSTOM PDF READER ================= */
+async function openChapter(item){
+  currentOpen=item; setReading(true);
+  $('#loader').style.display='flex'; $('#errBox').hidden=true;
+  $('#loaderTxt').textContent='FETCHING '+String(item.file_name).toUpperCase()+'…';
+  try{
+    const blob=await fetchPdf(item);
+    const buf=await blob.arrayBuffer();
+    if(pdf){pdf.destroy();pdf=null;}
+    pdf=await pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise;
+    pageCount=pdf.numPages; pageNum=1; zoom=1; renderedZoom=1; tx=ty=0;
+    $('#rChapter').textContent=String(item.chapter||item.file_name).toUpperCase();
+    $('#rSubject').textContent=(canonSubject(item.subject)||'').toUpperCase();
+    await renderPage();
+  }catch(e){
+    $('#errMsg').textContent=e.message||String(e);
+    $('#errBox').hidden=false;
+  }finally{ $('#loader').style.display='none'; }
+}
+$('#retryBtn').onclick=()=>{ if(currentOpen) openChapter(currentOpen); };
+$('#errClose').onclick=backToList;
+
+async function renderPage(){
+  if(!pdf) return;
+  const page=await pdf.getPage(pageNum);
+  const SW=stage.clientWidth, SH=stage.clientHeight;
+  const vp1=page.getViewport({scale:1});
+  const fit=Math.min((SW-30)/vp1.width,(SH-30)/vp1.height);
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const vp=page.getViewport({scale:fit*zoom*dpr});
+  if(renderTask){try{renderTask.cancel()}catch(e){}}
+  canvas.width=Math.floor(vp.width); canvas.height=Math.floor(vp.height);
+  canvas.style.width=Math.floor(vp.width/dpr)+'px'; canvas.style.height=Math.floor(vp.height/dpr)+'px';
+  renderTask=page.render({canvasContext:ctx,viewport:vp});
+  await renderTask.promise.catch(()=>{});
+  renderedZoom=zoom; clampPan(); applyTransform(); updateHud();
+}
+function applyTransform(){
+  wrap.style.transform=`translate(${tx}px,${ty}px) scale(${zoom/renderedZoom})`;
+  $('#zoomPct').textContent=Math.round(zoom*100)+'%';
+}
+function clampPan(){
+  const vs=zoom/renderedZoom;
+  if(zoom<=1.01){tx=0;ty=0;return;}
+  const W=canvas.offsetWidth*vs, H=canvas.offsetHeight*vs;
+  const mx=Math.max(0,(W-stage.clientWidth)/2)+70, my=Math.max(0,(H-stage.clientHeight)/2)+70;
+  tx=Math.min(mx,Math.max(-mx,tx)); ty=Math.min(my,Math.max(-my,ty));
+}
+function zoomAt(cx,cy,factor){
+  const nz=Math.min(4,Math.max(0.6,zoom*factor));
+  const vsO=zoom/renderedZoom, vsN=nz/renderedZoom;
+  const r=stage.getBoundingClientRect();
+  const px=cx-r.left-r.width/2, py=cy-r.top-r.height/2;
+  const qx=(px-tx)/vsO, qy=(py-ty)/vsO;
+  tx=px-vsN*qx; ty=py-vsN*qy; zoom=nz;
+  clampPan(); applyTransform();
+  clearTimeout(renderTimer); renderTimer=setTimeout(renderPage,160);
+}
+function updateHud(){
+  $('#pageHud').textContent=`${pageNum} / ${pageCount}`;
+  $('#prevPg').disabled=pageNum<=1; $('#nextPg').disabled=pageNum>=pageCount;
+}
+function nextPage(){ if(pageNum<pageCount){pageNum++;tx=ty=0;renderPage();} }
+function prevPage(){ if(pageNum>1){pageNum--;tx=ty=0;renderPage();} }
+$('#nextPg').onclick=nextPage; $('#prevPg').onclick=prevPage;
+$('#zoomIn').onclick=()=>zoomAt(innerWidth/2,innerHeight/2,1.25);
+$('#zoomOut').onclick=()=>zoomAt(innerWidth/2,innerHeight/2,0.8);
+$('#zoomFit').onclick=()=>{zoom=1;tx=ty=0;applyTransform();renderPage();};
+
+/* wheel = zoom (PC) */
+stage.addEventListener('wheel',e=>{e.preventDefault();zoomAt(e.clientX,e.clientY,e.deltaY<0?1.12:1/1.12);},{passive:false});
+
+/* pointers: drag-pan when zoomed, swipe pages when fitted, pinch-zoom on mobile */
+const pts=new Map(); let drag=null,pinch=null,swipe=null;
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+stage.addEventListener('pointerdown',e=>{
+  if(e.target.closest('button'))return;
+  e.preventDefault(); stage.setPointerCapture(e.pointerId);
+  pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pts.size===1){drag={sx:e.clientX,sy:e.clientY,tx,ty};swipe={dx:0,dy:0};stage.classList.add('panning');}
+  else if(pts.size===2){const[a,b]=[...pts.values()];pinch={d:dist(a,b),z:zoom};drag=swipe=null;}
+});
+stage.addEventListener('pointermove',e=>{
+  if(!pts.has(e.pointerId))return;
+  pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pinch&&pts.size===2){
+    const[a,b]=[...pts.values()],d=dist(a,b);
+    zoomAt((a.x+b.x)/2,(a.y+b.y)/2,(pinch.z*(d/pinch.d))/zoom);
+    pinch.d=d;
+  }else if(drag&&pts.size===1){
+    const dx=e.clientX-drag.sx, dy=e.clientY-drag.sy;
+    if(zoom>1.01){tx=drag.tx+dx;ty=drag.ty+dy;clampPan();applyTransform();}
+    else if(swipe){swipe.dx=dx;swipe.dy=dy;}
+  }
+});
+stage.addEventListener('pointerup',e=>{
+  pts.delete(e.pointerId); if(pts.size<2)pinch=null;
+  if(pts.size===0){
+    stage.classList.remove('panning');
+    if(swipe&&zoom<=1.01&&Math.abs(swipe.dx)>70&&Math.abs(swipe.dy)<90){ swipe.dx<0?nextPage():prevPage(); }
+    drag=swipe=null;
+  }
+});
+stage.addEventListener('pointercancel',e=>{pts.delete(e.pointerId);pinch=drag=swipe=null;stage.classList.remove('panning');});
+
+/* keyboard */
+document.addEventListener('keydown',e=>{
+  if(!document.body.classList.contains('reading'))return;
+  if(e.key==='ArrowRight')nextPage();
+  else if(e.key==='ArrowLeft')prevPage();
+  else if(e.key==='+'||e.key==='=')zoomAt(innerWidth/2,innerHeight/2,1.2);
+  else if(e.key==='-')zoomAt(innerWidth/2,innerHeight/2,0.83);
+  else if(e.key==='0'){zoom=1;tx=ty=0;applyTransform();renderPage();}
+});
+
+/* ============ PROTECTION: no right-click / drag / save on reader ============ */
+$('#viewReader').addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('dragstart',e=>{ if(e.target===canvas)e.preventDefault(); });
+document.addEventListener('keydown',e=>{
+  if(!document.body.classList.contains('reading'))return;
+  if((e.ctrlKey||e.metaKey)&&['s','p','j'].includes(e.key.toLowerCase()))e.preventDefault();
+});
+
+window.addEventListener('resize',()=>{ if(document.body.classList.contains('reading')){clearTimeout(renderTimer);renderTimer=setTimeout(renderPage,180);} });
+
+/* go */
+loadMaterials();
+</script>
+</body>
+</html>
