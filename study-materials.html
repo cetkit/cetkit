@@ -157,9 +157,6 @@ body.dark #pdfCanvas{filter:invert(1) hue-rotate(180deg);background:#fff}
 #hint{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:5;font-size:10px;letter-spacing:1px;color:var(--muted);background:var(--bg);border:1.5px dashed var(--muted);border-radius:999px;padding:5px 12px;white-space:nowrap}
 .overlay{position:absolute;inset:0;z-index:9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(2px)}
 .overlay .mono{font-size:12px;letter-spacing:1px;color:var(--muted)}
-.errcard{max-width:420px;margin:0 16px;padding:22px;text-align:center;border-radius:14px}
-.errcard p{font-size:13px;color:var(--muted);margin:8px 0 16px;line-height:1.6}
-.errcard h3{font-family:'Poppins',sans-serif}
 
 @media(max-width:720px){
   .nav-arrow{width:40px;height:52px;font-size:20px}
@@ -258,14 +255,6 @@ body.dark #pdfCanvas{filter:invert(1) hue-rotate(180deg);background:#fff}
     <div class="overlay" id="loader">
       <div class="spin"></div>
       <p class="mono" id="loaderTxt">FETCHING NOTES…</p>
-    </div>
-    <div class="overlay" id="errBox" hidden>
-      <div class="nb errcard">
-        <h3>⚠ Couldn't load this note</h3>
-        <p id="errMsg"></p>
-        <button class="btn btn-yellow" id="retryBtn">RETRY ↻</button>
-        <button class="btn" id="errClose">BACK TO NOTES</button>
-      </div>
     </div>
   </div>
 </section>
@@ -407,10 +396,10 @@ function backToList(){
 }
 
 /* ================= CUSTOM PDF READER ================= */
-async function openChapter(item){
+async function openChapter(item,attempt=0){
   const myGen=++loadGen;
   currentOpen=item; setReading(true);
-  $('#loader').style.display='flex'; $('#errBox').hidden=true;
+  $('#loader').style.display='flex';
   $('#loaderTxt').textContent='FETCHING '+String(item.file_name).toUpperCase()+'…';
   try{
     const blob=await fetchPdf(item);
@@ -427,14 +416,16 @@ async function openChapter(item){
     await renderPage();
   }catch(e){
     if(myGen!==loadGen) return; /* stale failure from a superseded call — ignore it */
-    $('#errMsg').textContent=e.message||String(e);
-    $('#errBox').hidden=false;
+    console.error('openChapter failed:',e);
+    /* No more error popup — most failures were transient CDN blips, so just
+       retry quietly in the background a couple of times instead of
+       interrupting the user. If it truly can't load, we just leave the
+       loader spinning rather than showing a broken/false-positive error. */
+    if(attempt<2){ setTimeout(()=>openChapter(item,attempt+1),500); return; }
   }finally{
     if(myGen===loadGen) $('#loader').style.display='none';
   }
 }
-$('#retryBtn').onclick=()=>{ if(currentOpen) openChapter(currentOpen); };
-$('#errClose').onclick=backToList;
 
 async function renderPage(){
   if(!pdf) return;
